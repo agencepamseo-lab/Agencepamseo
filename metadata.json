@@ -1,0 +1,6 @@
+{
+  "name": "LeadFactory Africa AI",
+  "description": "Plateforme autonome d'intelligence commerciale et de génération de prospects qualifiés pour le Burkina Faso et l'Afrique.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
