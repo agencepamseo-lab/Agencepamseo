@@ -10,7 +10,8 @@ interface MarketResearchProps {
   onTriggerSiteGeneration: (sector: string, keyword: string) => void;
 }
 
-export default function MarketResearch({ trends, onTriggerSiteGeneration }: MarketResearchProps) {
+export default function MarketResearch({ trends = [], onTriggerSiteGeneration }: MarketResearchProps) {
+  const safeTrends = Array.isArray(trends) ? trends : [];
   const [city, setCity] = useState('Bobo-Dioulasso');
   const [sector, setSector] = useState('Tous');
   const [isLoading, setIsLoading] = useState(false);
@@ -131,7 +132,7 @@ export default function MarketResearch({ trends, onTriggerSiteGeneration }: Mark
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {analysisResult.opportunities.map((opp, i) => (
+            {(Array.isArray(analysisResult.opportunities) ? analysisResult.opportunities : []).map((opp, i) => (
               <div key={i} className="bg-white rounded-xl border border-indigo-100 p-5 shadow-xs flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-3">
@@ -175,7 +176,7 @@ export default function MarketResearch({ trends, onTriggerSiteGeneration }: Mark
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trends.map((trend) => (
+          {safeTrends.map((trend) => (
             <div 
               key={trend.id} 
               className="bg-white border border-slate-100 rounded-xl p-5 shadow-xs flex flex-col justify-between hover:border-slate-300 transition-all hover:shadow-sm"

@@ -12,14 +12,17 @@ interface PartnerWorkspaceProps {
   onUpdateLead: (leadId: string, updates: { status?: Lead['status']; assignedPartnerId?: string | null }) => void;
 }
 
-export default function PartnerWorkspace({ leads, partners, onUpdateLead }: PartnerWorkspaceProps) {
-  const [activePartnerId, setActivePartnerId] = useState<string>(partners[0]?.id || '');
+export default function PartnerWorkspace({ leads = [], partners = [], onUpdateLead }: PartnerWorkspaceProps) {
+  const safeLeads = Array.isArray(leads) ? leads : [];
+  const safePartners = Array.isArray(partners) ? partners : [];
+
+  const [activePartnerId, setActivePartnerId] = useState<string>(safePartners[0]?.id || '');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const activePartner = partners.find(p => p.id === activePartnerId) || partners[0];
+  const activePartner = safePartners.find(p => p.id === activePartnerId) || safePartners[0];
 
   // Filter leads matched to this specific partner
-  const partnerLeads = leads.filter(l => l.assignedPartnerId === activePartnerId);
+  const partnerLeads = safeLeads.filter(l => l.assignedPartnerId === activePartnerId);
 
   // Stats for this partner
   const totalReceived = partnerLeads.length;
@@ -70,7 +73,7 @@ export default function PartnerWorkspace({ leads, partners, onUpdateLead }: Part
           onChange={(e) => setActivePartnerId(e.target.value)}
           className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-semibold focus:outline-hidden"
         >
-          {partners.map(p => (
+          {safePartners.map(p => (
             <option key={p.id} value={p.id}>{p.name} ({p.sector})</option>
           ))}
         </select>

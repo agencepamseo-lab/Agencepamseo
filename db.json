@@ -1,0 +1,792 @@
+{
+  "sites": [
+    {
+      "id": "site-1",
+      "title": "Faso Solaire Solutions",
+      "theme": "solaire",
+      "city": "Bobo-Dioulasso",
+      "domain": "solaire-bobo.leadfactory.africa",
+      "status": "active",
+      "headline": "Installez vos panneaux solaires au meilleur prix à Bobo-Dioulasso",
+      "subheadline": "Demandez votre devis gratuit en 2 minutes. Des experts certifiés installent des kits solaires robustes pour maisons, commerces et forages.",
+      "features": [
+        "Kits solaires complets (panneaux, batterie, onduleur) garantie 5 ans",
+        "Installation certifiée par des techniciens locaux basés à Bobo",
+        "Support technique ultra-rapide et service après-vente de proximité"
+      ],
+      "chatbotGreeting": "Bonjour ! Je suis l'assistant IA de Faso Solaire. Souhaitez-vous installer des panneaux solaires pour votre maison, commerce ou pour un système d'irrigation à Bobo-Dioulasso ?",
+      "chatbotPersona": "Vous êtes un ingénieur solaire chaleureux et rigoureux basé à Bobo-Dioulasso. Vous guidez les clients locaux vers les meilleurs devis.",
+      "faqs": [
+        {
+          "question": "Quel est le prix moyen d'un kit solaire pour maison ?",
+          "answer": "Nos offres commencent à 350 000 FCFA pour un kit d'éclairage et ventilation de base, et s'adaptent selon vos besoins."
+        },
+        {
+          "question": "Combien de temps dure l'installation ?",
+          "answer": "Une fois le devis validé, l'installation complète prend généralement de 24 à 48 heures."
+        },
+        {
+          "question": "Vos équipements sont-ils garantis ?",
+          "answer": "Oui, tous nos panneaux sont garantis 10 ans et nos batteries de 2 à 5 ans selon la gamme."
+        }
+      ],
+      "leadsCount": 18,
+      "isCILCompliant": true,
+      "complianceRating": 98,
+      "complianceReport": {
+        "justification": "Le site respecte les exigences de la Loi N°001-2021/AN du Burkina Faso sur la protection des données personnelles.",
+        "consentNotice": "Formulaire intégrant une case à cocher explicite pour la transmission des données de contact.",
+        "legalMentions": "Mentions légales identifiant clairement l'éditeur LeadFactory Africa AI et l'hébergeur agréé.",
+        "retractionRights": "Mention explicite du droit d'accès et de rectification auprès de la CIL Burkina.",
+        "warnings": []
+      }
+    },
+    {
+      "id": "site-2",
+      "title": "Académie Tech du Houet",
+      "theme": "formation",
+      "city": "Bobo-Dioulasso",
+      "domain": "formations-ia.leadfactory.africa",
+      "status": "active",
+      "headline": "Formez-vous aux métiers de l'Intelligence Artificielle et du Digital à Bobo",
+      "subheadline": "Des programmes intensifs, pratiques et adaptés au marché burkinabè pour propulser votre carrière ou moderniser votre entreprise.",
+      "features": [
+        "Formations 100% pratiques animées par des experts du secteur",
+        "Projets réels et accompagnement à l'insertion professionnelle",
+        "Formules flexibles en cours du soir ou week-end"
+      ],
+      "chatbotGreeting": "Bienvenue sur la plateforme de l'Académie Tech ! Quelle compétence digitale souhaitez-vous acquérir (IA, Marketing, Développement Web) à Bobo-Dioulasso ?",
+      "chatbotPersona": "Vous êtes un conseiller d'orientation passionné par l'essor du numérique au Burkina Faso. Vous encouragez les jeunes et les professionnels.",
+      "faqs": [
+        {
+          "question": "Est-ce accessible aux débutants ?",
+          "answer": "Absolument ! Nos modules 'Zéro à Héros' ne nécessitent aucun prérequis technique."
+        },
+        {
+          "question": "Où se déroulent les cours ?",
+          "answer": "Dans nos locaux connectés situés au centre-ville de Bobo-Dioulasso, ou en ligne selon la formule."
+        }
+      ],
+      "leadsCount": 10,
+      "isCILCompliant": true,
+      "complianceRating": 95,
+      "complianceReport": {
+        "justification": "Le site respecte les standards de la CIL et de la RGPD.",
+        "consentNotice": "Case d'acceptation obligatoire avant soumission des coordonnées.",
+        "legalMentions": "Mentions légales conformes indiquant l'Académie Tech du Houet comme responsable de traitement.",
+        "retractionRights": "Option de désinscription disponible par email direct.",
+        "warnings": [
+          "Ajouter le numéro d'agrément de formation professionnelle dès réception."
+        ]
+      }
+    },
+    {
+      "id": "site-3",
+      "title": "Immo-Houet Pro",
+      "theme": "immobilier",
+      "city": "Bobo-Dioulasso",
+      "domain": "immo-bobo.leadfactory.africa",
+      "status": "active",
+      "headline": "Trouvez votre terrain ou logement idéal à Bobo-Dioulasso sans intermédiaire suspect",
+      "subheadline": "Accédez à des offres de location, d'achat de parcelles sécurisées et d'estimations immobilières certifiées par des professionnels agréés.",
+      "features": [
+        "Parcelles avec titres fonciers clairs et vérifiés par un notaire",
+        "Visites gratuites et accompagnement personnalisé de A à Z",
+        "Estimation rapide de la valeur locative ou marchande de vos biens"
+      ],
+      "chatbotGreeting": "Bonjour ! Cherchez-vous à acheter un terrain sécurisé, louer une villa ou faire estimer un bien immobilier à Bobo-Dioulasso ?",
+      "chatbotPersona": "Vous êtes un agent immobilier expérimenté, honnête et très au fait des prix des quartiers comme Sarfalao, Koko et Belleville à Bobo.",
+      "faqs": [
+        {
+          "question": "Comment être sûr que la parcelle est sécurisée ?",
+          "answer": "Chaque terrain proposé sur notre site est audité juridiquement avec un acte de cession ou un titre foncier en règle."
+        },
+        {
+          "question": "Faites-vous de la gestion locative ?",
+          "answer": "Oui, nos partenaires s'occupent de la perception de vos loyers et de l'entretien de vos immeubles."
+        }
+      ],
+      "leadsCount": 18,
+      "isCILCompliant": true,
+      "complianceRating": 92,
+      "complianceReport": {
+        "justification": "Données de prospection collectées avec double consentement explicite.",
+        "consentNotice": "Consentement séparé pour le traitement local (CIL) et le transfert vers le partenaire immobilier.",
+        "legalMentions": "Identité de l'agence immobilière partenaire clairement affichée.",
+        "retractionRights": "Droits de retrait exerçables à tout moment.",
+        "warnings": [
+          "Le formulaire doit mentionner que les visites de parcelles respectent la réglementation de l'urbanisme local."
+        ]
+      }
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "camp-1",
+      "siteId": "site-1",
+      "name": "Campagne Solaire Cliniques & Commerces Bobo",
+      "targetSegment": "ENTERPRISE",
+      "targetCity": "Bobo-Dioulasso",
+      "sector": "solaire",
+      "offer": "Installation Solaire Autonome avec batterie Lithium",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "camp-2",
+      "siteId": "site-2",
+      "name": "Campagne Formation IA Cadres & Étudiants",
+      "targetSegment": "EXECUTIVE",
+      "targetCity": "Bobo-Dioulasso",
+      "sector": "formation",
+      "offer": "Pratique IA & Data pour professionnels",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "camp-3",
+      "siteId": "site-3",
+      "name": "Campagne Immobilier Résidentiel Belleville",
+      "targetSegment": "PROJECT",
+      "targetCity": "Bobo-Dioulasso",
+      "sector": "immobilier",
+      "offer": "Location & Vente Parcelles Sécurisées",
+      "status": "ACTIVE"
+    }
+  ],
+  "leads": [
+    {
+      "id": "lead-1786628262166",
+      "siteId": "site-2",
+      "campaignId": "camp-2",
+      "siteTitle": "Académie Tech du Houet",
+      "name": "Bintou Sanou",
+      "phone": "+226 76 55 44 33",
+      "email": "bintou.sanou@yahoo.fr",
+      "city": "Bobo-Dioulasso",
+      "rawMessage": "Demande de forage d'eau potable avec analyse physico-chimique à Bobo.",
+      "status": "new",
+      "score": 10,
+      "summarizedNeed": "Recherche d'un prestataire pour la réalisation d'un forage d'eau potable avec analyse physico-chimique à Bobo-Dioulasso.",
+      "budget": "Non spécifié",
+      "urgency": "Moyen",
+      "keyPainPoint": "Inadéquation totale entre la demande du prospect (forage d'eau) et l'activité exclusive de l'Académie Tech du Houet (formation professionnelle en informatique/tech).",
+      "suggestedAction": "Contacter le prospect pour clarifier l'erreur d'aiguillage et présenter poliment les services réels de l'Académie Tech du Houet au cas où un besoin en formation tech existerait.",
+      "responseDraft": "Bonjour Bintou Sanou, nous avons bien reçu votre message. Cependant, il semble y avoir une petite erreur : notre établissement, l'Académie Tech du Houet basé à Bobo-Dioulasso, propose exclusivement des formations professionnelles 100% pratiques en informatique et technologies (accessibles aux débutants, projets réels, cours du soir ou week-end). Nous ne proposons pas de services de forage d'eau. Si vous souhaitez acquérir des compétences numériques pour vous ou vos proches, nous restons à votre entière disposition. Cordialement, l'équipe de l'Académie Tech du Houet.",
+      "assignedPartnerId": "partner-2",
+      "createdAt": "2026-08-13T13:37:42.166Z",
+      "source": "facebook_ads",
+      "landingPage": "https://forage-eau-bobo.com/demande-forage",
+      "formType": "estimate",
+      "acquisitionPath": "Landing Page (https://forage-eau-bobo.com/demande-forage) -> estimate -> Ingestion API",
+      "interactionHistory": [
+        {
+          "timestamp": "2026-08-13T13:37:42.166Z",
+          "action": "initial_capture",
+          "landingPage": "https://forage-eau-bobo.com/demande-forage",
+          "formType": "estimate",
+          "campaignId": "camp-2",
+          "details": "Demande de forage d'eau potable avec analyse physico-chimique à Bobo."
+        }
+      ],
+      "consentCILChecked": true,
+      "consentPartnerChecked": true,
+      "ipAddress": "196.28.166.26",
+      "isFlaggedAnomaly": false,
+      "securityRiskLevel": "none",
+      "securityLogs": [
+        "Démarrage du scan de sécurité par Security Guardian AI...",
+        "Adresse IP détectée : 196.28.166.26 (Burkina Faso)",
+        "Analyse anti-spam : Négative (Prospect légitime)",
+        "Format du numéro : Conforme aux opérateurs nationaux (Moov / Orange / Telecel)."
+      ],
+      "distributionType": "standard",
+      "distributionChannels": {
+        "email": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:49.648Z",
+          "recipient": "info@isth-bobo.com"
+        },
+        "whatsapp": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:49.648Z",
+          "formattedMessage": "LeadFactory : Nouveau prospect Bintou Sanou (+226 76 55 44 33) disponible pour Académie Tech du Houet."
+        },
+        "telegram": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:49.648Z",
+          "botCommandTriggered": "/prospect lead-1786628262166"
+        }
+      }
+    },
+    {
+      "id": "lead-1786628255234",
+      "siteId": "site-1",
+      "campaignId": "camp-1",
+      "siteTitle": "Faso Solaire Solutions",
+      "name": "Adama Traoré",
+      "phone": "+226 70 88 11 22",
+      "email": "adama.traore@gmail.com",
+      "city": "Bobo-Dioulasso",
+      "rawMessage": "Je souhaite aussi un devis complémentaire pour l'éclairage de ma résidence.",
+      "status": "new",
+      "score": 85,
+      "summarizedNeed": "Obtenir un devis complémentaire pour l'installation d'un kit solaire d'éclairage pour sa résidence à Bobo-Dioulasso.",
+      "budget": "Non spécifié",
+      "urgency": "Moyen",
+      "keyPainPoint": "Besoin d'une estimation budgétaire rapide et d'une installation fiable pour sécuriser l'éclairage de sa résidence à Bobo-Dioulasso.",
+      "suggestedAction": "Contacter le prospect par téléphone pour évaluer ses besoins en éclairage et lui proposer un devis personnalisé ainsi qu'une visite de nos techniciens de Bobo-Dioulasso.",
+      "responseDraft": "Bonjour M. Traoré, Merci pour votre intérêt pour Faso Solaire Solutions. Nous avons bien reçu votre demande de devis complémentaire pour l'éclairage de votre résidence à Bobo-Dioulasso. Nos kits d'éclairage de base commencent à 350 000 FCFA avec une garantie de 5 ans et un service après-vente de proximité assuré par nos techniciens locaux à Bobo. Je vous propose de vous recontacter par téléphone au +226 70 88 11 22 afin de configurer la solution idéale pour votre maison et vous transmettre un chiffrage précis sous 24h. Bien cordialement, L'équipe Faso Solaire Solutions.",
+      "assignedPartnerId": "partner-1",
+      "createdAt": "2026-08-13T13:37:35.234Z",
+      "source": "google_ads",
+      "landingPage": "https://solaire-bobo.com/kit-residentiel",
+      "formType": "appointment",
+      "acquisitionPath": "Landing Page (https://solaire-bobo.com/devis-pompage) -> quote -> Ingestion API -> Re-engagement (appointment) via https://solaire-bobo.com/kit-residentiel",
+      "interactionHistory": [
+        {
+          "timestamp": "2026-08-13T13:37:35.234Z",
+          "action": "initial_capture",
+          "landingPage": "https://solaire-bobo.com/devis-pompage",
+          "formType": "quote",
+          "campaignId": "camp-1",
+          "details": "Je souhaite installer un système de pompage solaire pour un champ de 5 hectares à Bobo-Dioulasso. Urgent!"
+        },
+        {
+          "timestamp": "2026-08-13T13:37:49.656Z",
+          "action": "re_engagement",
+          "landingPage": "https://solaire-bobo.com/kit-residentiel",
+          "formType": "appointment",
+          "campaignId": "camp-1",
+          "details": "Je souhaite aussi un devis complémentaire pour l'éclairage de ma résidence."
+        }
+      ],
+      "consentCILChecked": true,
+      "consentPartnerChecked": true,
+      "ipAddress": "196.28.145.185",
+      "isFlaggedAnomaly": false,
+      "securityRiskLevel": "none",
+      "securityLogs": [
+        "Démarrage du scan de sécurité par Security Guardian AI...",
+        "Adresse IP détectée : 196.28.145.185 (Burkina Faso)",
+        "Analyse anti-spam : Négative (Prospect légitime)",
+        "Format du numéro : Conforme aux opérateurs nationaux (Moov / Orange / Telecel)."
+      ],
+      "distributionType": "exclusive",
+      "distributionChannels": {
+        "email": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:57.293Z",
+          "recipient": "contact@sinergisolaire.bf"
+        },
+        "whatsapp": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:57.293Z",
+          "formattedMessage": "LeadFactory : Nouveau prospect Adama Traoré (+226 70 88 11 22) disponible pour Faso Solaire Solutions."
+        },
+        "telegram": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:57.293Z",
+          "botCommandTriggered": "/prospect lead-1786628255234"
+        }
+      }
+    },
+    {
+      "id": "lead-1786628247920",
+      "siteId": "site-1",
+      "campaignId": null,
+      "siteTitle": "Faso Solaire Solutions",
+      "name": "Mamadou",
+      "phone": "+22670889900",
+      "email": "non-precise@mail.com",
+      "city": "Bobo-Dioulasso",
+      "rawMessage": "Besoin de devis",
+      "status": "new",
+      "score": 80,
+      "summarizedNeed": "Demande d'un devis pour l'installation d'un kit solaire à son domicile ou local à Bobo-Dioulasso.",
+      "budget": "Non spécifié",
+      "urgency": "Moyen",
+      "keyPainPoint": "Besoin d'estimer le coût d'une installation solaire fiable et garantie avec un service de proximité à Bobo-Dioulasso.",
+      "suggestedAction": "Appeler le prospect au téléphone (+22670889900) pour évaluer sa consommation électrique (appareils à alimenter) afin de lui proposer le kit solaire adéquat et lui envoyer un devis sur-mesure.",
+      "responseDraft": "Bonjour M. Mamadou,\n\nMerci d'avoir contacté Faso Solaire Solutions. Nous avons bien reçu votre demande de devis pour un équipement solaire à Bobo-Dioulasso.\n\nNos offres de kits solaires complets (panneaux, batterie, onduleur) commencent à partir de 350 000 FCFA et bénéficient d'une garantie de 5 ans, avec une installation rapide en 24 à 48 heures par nos techniciens basés localement à Bobo.\n\nAfin de vous proposer une solution parfaitement dimensionnée et un devis précis, je vais vous contacter par téléphone aujourd'hui pour faire un point rapide sur vos besoins.\n\nRestant à votre entière disposition.\n\nCordialement,\nL'équipe Faso Solaire Solutions",
+      "assignedPartnerId": "partner-1",
+      "createdAt": "2026-08-13T13:37:27.920Z",
+      "source": "organic_seo",
+      "formType": "contact",
+      "acquisitionPath": "Landing Page (Direct) -> contact -> Ingestion API",
+      "interactionHistory": [
+        {
+          "timestamp": "2026-08-13T13:37:27.920Z",
+          "action": "initial_capture",
+          "formType": "contact",
+          "details": "Besoin de devis"
+        }
+      ],
+      "consentCILChecked": true,
+      "consentPartnerChecked": true,
+      "ipAddress": "196.28.224.189",
+      "isFlaggedAnomaly": false,
+      "securityRiskLevel": "none",
+      "securityLogs": [
+        "Démarrage du scan de sécurité par Security Guardian AI...",
+        "Adresse IP détectée : 196.28.224.189 (Burkina Faso)",
+        "Analyse anti-spam : Négative (Prospect légitime)",
+        "Format du numéro : Conforme aux opérateurs nationaux (Moov / Orange / Telecel)."
+      ],
+      "distributionType": "exclusive",
+      "distributionChannels": {
+        "email": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:35.223Z",
+          "recipient": "contact@sinergisolaire.bf"
+        },
+        "whatsapp": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:35.223Z",
+          "formattedMessage": "LeadFactory : Nouveau prospect Mamadou (+22670889900) disponible pour Faso Solaire Solutions."
+        },
+        "telegram": {
+          "sent": true,
+          "sentAt": "2026-08-13T13:37:35.223Z",
+          "botCommandTriggered": "/prospect lead-1786628247920"
+        }
+      }
+    },
+    {
+      "id": "lead-1786628240224",
+      "siteId": "site-1",
+      "campaignId": null,
+      "siteTitle": "Faso Solaire Solutions",
+      "name": "Hacker SELECT",
+      "phone": "+22670112233",
+      "email": "non-precise@mail.com",
+      "city": "Bobo-Dioulasso",
+      "rawMessage": "DROP TABLE users; OR 1=1--",
+      "status": "new",
+      "score": 25,
+      "summarizedNeed": "Aucun besoin légitime identifié. Le message soumis contient des tentatives d'injection SQL suspectes.",
+      "budget": "Non spécifié",
+      "urgency": "Faible",
+      "keyPainPoint": "Soumission de formulaire contenant du code suspect au lieu d'une demande de projet solaire.",
+      "suggestedAction": "Bloquer ou ignorer ce prospect, et transmettre la soumission au service technique pour vérification de la sécurité du formulaire.",
+      "responseDraft": "Bonjour, votre message n'a pas pu être traité en raison d'un format de données invalide. Si vous souhaitez obtenir un devis pour un kit solaire à Bobo-Dioulasso, veuillez soumettre à nouveau une demande claire. Cordialement, l'équipe Faso Solaire Solutions.",
+      "assignedPartnerId": null,
+      "createdAt": "2026-08-13T13:37:20.224Z",
+      "source": "organic_seo",
+      "formType": "contact",
+      "acquisitionPath": "Landing Page (Direct) -> contact -> Ingestion API",
+      "interactionHistory": [
+        {
+          "timestamp": "2026-08-13T13:37:20.224Z",
+          "action": "initial_capture",
+          "formType": "contact",
+          "details": "DROP TABLE users; OR 1=1--"
+        }
+      ],
+      "consentCILChecked": true,
+      "consentPartnerChecked": true,
+      "ipAddress": "196.28.239.156",
+      "isFlaggedAnomaly": true,
+      "securityRiskLevel": "high",
+      "securityLogs": [
+        "Démarrage du scan de sécurité par Security Guardian AI...",
+        "Adresse IP détectée : 196.28.239.156 (Burkina Faso)",
+        "ALERTE : Tentative d'injection SQL ou script malveillant détectée ! Saisie bloquée en quarantaine."
+      ],
+      "distributionType": "standard",
+      "distributionChannels": {
+        "email": {
+          "sent": false,
+          "sentAt": null,
+          "recipient": ""
+        },
+        "whatsapp": {
+          "sent": false,
+          "sentAt": null,
+          "formattedMessage": "LeadFactory : Nouveau prospect Hacker SELECT (+22670112233) disponible pour Faso Solaire Solutions."
+        },
+        "telegram": {
+          "sent": false,
+          "sentAt": null,
+          "botCommandTriggered": "/prospect lead-1786628240224"
+        }
+      }
+    },
+    {
+      "id": "lead-1786617565893",
+      "siteId": "site-1",
+      "siteTitle": "Faso Solaire Solutions",
+      "name": "Ibrahim Sawadogo",
+      "phone": "+226 71 22 33 44",
+      "email": "ibrahim@sawadogo.bf",
+      "city": "Bobo-Dioulasso",
+      "rawMessage": "Bonjour je cherche un kit solaire 3KW pour mon restaurant à Bobo",
+      "status": "new",
+      "score": 65,
+      "summarizedNeed": "Demande de service solaire pour Ibrahim Sawadogo.",
+      "budget": "Moyen",
+      "urgency": "Moyen",
+      "keyPainPoint": "Recherche de solutions de confiance locales à Bobo-Dioulasso",
+      "suggestedAction": "Prendre contact sous 2 heures par téléphone.",
+      "responseDraft": "Bonjour Ibrahim Sawadogo,\n\nNous avons bien reçu votre demande concernant notre service Faso Solaire Solutions. Un professionnel certifié partenaire à Bobo-Dioulasso vous contactera sous peu pour vous soumettre un devis détaillé.\n\nCordialement,\nLeadFactory Africa AI",
+      "assignedPartnerId": "partner-1",
+      "createdAt": "2026-08-13T10:39:25.893Z",
+      "consentCILChecked": true,
+      "consentPartnerChecked": true,
+      "ipAddress": "196.28.74.183",
+      "isFlaggedAnomaly": false,
+      "securityRiskLevel": "none",
+      "securityLogs": [
+        "Démarrage du scan de sécurité par Security Guardian AI...",
+        "Adresse IP détectée : 196.28.74.183 (Burkina Faso)",
+        "Analyse anti-spam : Négative (Prospect légitime)",
+        "Format du numéro : Conforme aux opérateurs nationaux (Moov / Orange / Telecel)."
+      ],
+      "distributionType": "standard",
+      "distributionChannels": {
+        "email": {
+          "sent": true,
+          "sentAt": "2026-08-13T10:39:25.893Z",
+          "recipient": "contact@sinergisolaire.bf"
+        },
+        "whatsapp": {
+          "sent": true,
+          "sentAt": "2026-08-13T10:39:25.893Z",
+          "formattedMessage": "LeadFactory : Nouveau prospect Ibrahim Sawadogo (+226 71 22 33 44) disponible pour Faso Solaire Solutions."
+        },
+        "telegram": {
+          "sent": true,
+          "sentAt": "2026-08-13T10:39:25.893Z",
+          "botCommandTriggered": "/prospect lead-1786617565893"
+        }
+      }
+    },
+    {
+      "id": "lead-1",
+      "siteId": "site-1",
+      "siteTitle": "Faso Solaire Solutions",
+      "name": "Ousmane Ouédraogo",
+      "phone": "+226 70 12 34 56",
+      "email": "ousmane.oued@gmail.com",
+      "city": "Bobo-Dioulasso",
+      "rawMessage": "Bonjour, je cherche un système solaire complet pour ma clinique privée à Sarfalao. Nous subissons trop de délestages et cela endommage nos équipements médicaux. J'ai un budget d'environ 2 500 000 FCFA. J'aimerais une autonomie d'au moins 6 heures pour l'éclairage et 2 réfrigérateurs de vaccins.",
+      "status": "new",
+      "score": 95,
+      "summarizedNeed": "Installation solaire autonome (min 6h) pour clinique médicale privée afin de parer aux délestages.",
+      "budget": "Élevé",
+      "urgency": "Élevé",
+      "keyPainPoint": "Les coupures d'électricité récurrentes mettent en péril la conservation des vaccins et le fonctionnement de la clinique.",
+      "suggestedAction": "Planifier une visite technique d'urgence à la clinique pour évaluer la puissance des réfrigérateurs et concevoir un devis adapté.",
+      "responseDraft": "Bonjour M. Ouédraogo,\n\nVotre demande a été priorisée par Faso Solaire. Les délestages à Sarfalao nécessitent effectivement une installation robuste pour sécuriser vos réfrigérateurs médicaux. Nous disposons d'équipements médicaux spécialisés avec batteries lithium. Un de nos ingénieurs partenaires va vous contacter pour fixer un rendez-vous technique d'ici ce soir.\n\nCordialement,\nLeadFactory - Faso Solaire Bobo",
+      "assignedPartnerId": "partner-1",
+      "createdAt": "2026-07-20T05:30:00Z",
+      "consentCILChecked": true,
+      "consentPartnerChecked": true,
+      "ipAddress": "196.28.245.12",
+      "isFlaggedAnomaly": false,
+      "securityRiskLevel": "none",
+      "securityLogs": [
+        "Vérification IP géographique : Ouagadougou/Bobo-Dioulasso - Cohérente",
+        "Analyse de formulaire : Taux de remplissage 100%",
+        "Format téléphone valide : indicatif +226 vérifié"
+      ],
+      "distributionChannels": {
+        "email": {
+          "sent": true,
+          "sentAt": "2026-07-20T05:32:00Z",
+          "recipient": "contact@sinergisolaire.bf"
+        },
+        "whatsapp": {
+          "sent": true,
+          "sentAt": "2026-07-20T05:32:05Z",
+          "formattedMessage": "Nouveau prospect Solaire ! Ousmane Ouédraogo recherche un kit solaire autonome pour une clinique à Sarfalao. Budget estimé : Élevé."
+        },
+        "telegram": {
+          "sent": true,
+          "sentAt": "2026-07-20T05:32:10Z",
+          "botCommandTriggered": "/prospect lead-1"
+        }
+      },
+      "distributionType": "exclusive"
+    },
+    {
+      "id": "lead-2",
+      "siteId": "site-3",
+      "siteTitle": "Immo-Houet Pro",
+      "name": "Mariam Traoré",
+      "phone": "+226 76 98 76 54",
+      "email": "mariam.traore@outlook.com",
+      "city": "Bobo-Dioulasso",
+      "rawMessage": "Je cherche une maison à louer de 3 pièces (2 chambres + salon) avec cour fermée et garage à Belleville ou Accart-ville. Mon budget mensuel maximum est de 120 000 FCFA. C'est urgent car mon contrat actuel se termine à la fin du mois.",
+      "status": "contacted",
+      "score": 88,
+      "summarizedNeed": "Recherche de location de maison 3 pièces avec cour fermée et garage à Belleville/Accart-ville (budget max 120 000 FCFA/mois).",
+      "budget": "Moyen",
+      "urgency": "Élevé",
+      "keyPainPoint": "Fin de contrat de bail imminente (fin du mois), risque de se retrouver sans logement.",
+      "suggestedAction": "Proposer immédiatement les 3 fiches de villas correspondantes dans notre catalogue de Belleville et organiser les visites.",
+      "responseDraft": "Bonjour Mme Traoré,\n\nNous avons bien reçu votre recherche urgente de villa 3 pièces à Belleville. C'est un quartier très demandé mais notre partenaire immobilier local possède actuellement deux options avec cour fermée à 110 000 FCFA et 125 000 FCFA. Nous vous appelons dans l'heure pour caler les visites gratuites.\n\nExcellente journée,\nLeadFactory Immo-Houet",
+      "assignedPartnerId": "partner-3",
+      "createdAt": "2026-07-19T14:15:00Z",
+      "consentCILChecked": true,
+      "consentPartnerChecked": true,
+      "ipAddress": "196.28.245.45",
+      "isFlaggedAnomaly": false,
+      "securityRiskLevel": "none",
+      "securityLogs": [
+        "Vérification IP géographique : Bobo-Dioulasso - Cohérente",
+        "Validation de la syntaxe email : OK"
+      ],
+      "distributionChannels": {
+        "email": {
+          "sent": true,
+          "sentAt": "2026-07-19T14:16:00Z",
+          "recipient": "bobo@houetcleimmo.bf"
+        },
+        "whatsapp": {
+          "sent": false,
+          "sentAt": null,
+          "formattedMessage": ""
+        },
+        "telegram": {
+          "sent": true,
+          "sentAt": "2026-07-19T14:16:15Z",
+          "botCommandTriggered": "/prospect lead-2"
+        }
+      },
+      "distributionType": "standard"
+    },
+    {
+      "id": "lead-3",
+      "siteId": "site-2",
+      "siteTitle": "Académie Tech du Houet",
+      "name": "Moussa Sawadogo",
+      "phone": "+226 65 43 21 09",
+      "email": "moussa.sawa@univ-bobo.bf",
+      "city": "Bobo-Dioulasso",
+      "rawMessage": "Je suis étudiant en fin de cycle informatique à l'UPB. Je voudrais savoir s'il y a des sessions de formation pratique en IA et Machine Learning cet été, et si vous proposez des réductions pour les étudiants car mes moyens sont limités.",
+      "status": "sold",
+      "score": 75,
+      "summarizedNeed": "Demande d'information sur une formation d'été pratique en IA/Machine Learning avec réduction étudiante.",
+      "budget": "Faible",
+      "urgency": "Moyen",
+      "keyPainPoint": "Manque de compétences pratiques en IA sur le cursus universitaire classique et budget limité.",
+      "suggestedAction": "L'inscrire sur la liste d'attente de la cohorte d'août et lui proposer la formule 'bourse jeune talent digital' à -30%.",
+      "responseDraft": "Bonjour Moussa,\n\nFélicitations pour ton parcours à l'UPB ! Oui, nous lançons le module 'Pratique IA & Data' en cours du soir dès le 1er août. Un tarif spécial étudiant à 70 000 FCFA au lieu de 100 000 FCFA éligible sur présentation de ta carte. Notre conseiller de l'Académie Tech t'appellera pour valider ton inscription.\n\nÀ très vite ! Académie Tech",
+      "assignedPartnerId": "partner-2",
+      "createdAt": "2026-07-18T09:40:00Z",
+      "consentCILChecked": true,
+      "consentPartnerChecked": true,
+      "ipAddress": "196.28.240.89",
+      "isFlaggedAnomaly": false,
+      "securityRiskLevel": "none",
+      "securityLogs": [
+        "Vérification IP géographique : Campus UPB Bobo - Cohérente",
+        "Niveau de risque : Nul"
+      ],
+      "distributionChannels": {
+        "email": {
+          "sent": true,
+          "sentAt": "2026-07-18T09:42:00Z",
+          "recipient": "info@isth-bobo.com"
+        },
+        "whatsapp": {
+          "sent": true,
+          "sentAt": "2026-07-18T09:42:12Z",
+          "formattedMessage": "Nouveau prospect formation : Moussa Sawadogo (IA/Machine Learning). Plan d'action : Proposer réduction étudiant."
+        },
+        "telegram": {
+          "sent": false,
+          "sentAt": null,
+          "botCommandTriggered": ""
+        }
+      },
+      "distributionType": "standard"
+    }
+  ],
+  "partners": [
+    {
+      "id": "partner-1",
+      "name": "Sinergi Solaire S.A.R.L.",
+      "sector": "solaire",
+      "city": "Bobo-Dioulasso",
+      "phone": "+226 25 30 11 22",
+      "email": "contact@sinergisolaire.bf",
+      "status": "active",
+      "leadsReceived": 11,
+      "maxLeadsPerMonth": 25,
+      "subscriptionPlan": "Business",
+      "revenueGenerated": 160000,
+      "exclusiveAccess": false
+    },
+    {
+      "id": "partner-2",
+      "name": "Institut Supérieur de Technologie du Houet",
+      "sector": "formation",
+      "city": "Bobo-Dioulasso",
+      "phone": "+226 20 97 00 11",
+      "email": "info@isth-bobo.com",
+      "status": "active",
+      "leadsReceived": 6,
+      "maxLeadsPerMonth": 9999,
+      "subscriptionPlan": "Premium",
+      "revenueGenerated": 350000,
+      "exclusiveAccess": true
+    },
+    {
+      "id": "partner-3",
+      "name": "Houet Clé Immo",
+      "sector": "immobilier",
+      "city": "Bobo-Dioulasso",
+      "phone": "+226 20 98 44 55",
+      "email": "bobo@houetcleimmo.bf",
+      "status": "discovery",
+      "leadsReceived": 4,
+      "maxLeadsPerMonth": 10,
+      "subscriptionPlan": "Starter",
+      "revenueGenerated": 0,
+      "exclusiveAccess": false
+    }
+  ],
+  "marketTrends": [
+    {
+      "id": "trend-1",
+      "keyword": "Panneau solaire irrigation Bobo",
+      "sector": "solaire",
+      "volume": "Élevé",
+      "growth": "+48%",
+      "description": "Les maraîchers de la plaine de Bobo-Dioulasso cherchent massivement à remplacer les motopompes à essence par des pompes solaires en raison du coût du carburant.",
+      "opportunity": "Créer un tunnel d'acquisition focalisé sur l'irrigation agricole solaire pour la région des Hauts-Bassins."
+    },
+    {
+      "id": "trend-2",
+      "keyword": "Formation IA certifiante Burkina",
+      "sector": "formation",
+      "volume": "Très Élevé",
+      "growth": "+65%",
+      "description": "Forte augmentation de la demande en formations courtes et pratiques sur ChatGPT, l'IA générative et l'automatisation par les PME et cadres locaux.",
+      "opportunity": "Lancer un microsite ciblant les chefs d'entreprise pour des formations 'Productivité IA' intra-entreprise."
+    },
+    {
+      "id": "trend-3",
+      "keyword": "Location meublée Belleville Bobo",
+      "sector": "immobilier",
+      "volume": "Moyen",
+      "growth": "+22%",
+      "description": "Hausse des demandes de logements de moyen/haut standing meublés pour les professionnels en mission temporaire à Bobo-Dioulasso.",
+      "opportunity": "Générer un site de capture spécialisé dans l'hébergement d'affaires et la location meublée temporaire."
+    },
+    {
+      "id": "trend-4",
+      "keyword": "Forage d'eau agricole prix",
+      "sector": "forage",
+      "volume": "Élevé",
+      "growth": "+30%",
+      "description": "Les promoteurs immobiliers et les coopératives agricoles exigent de plus en plus des devis directs pour les forages d'eau avec pompe immergée.",
+      "opportunity": "Déployer une plateforme simple 'Forage Devis Faso' connectant les clients aux foreurs certifiés."
+    },
+    {
+      "id": "trend-5",
+      "keyword": "Couveuse automatique solaire Bobo",
+      "sector": "agriculture",
+      "volume": "Moyen",
+      "growth": "+40%",
+      "description": "Les éleveurs de volailles s'intéressent aux couveuses fonctionnant sur batteries ou panneaux solaires pour éliminer les pertes de poussins dues aux coupures.",
+      "opportunity": "Créer un site vitrine pour la commande de kits d'incubation solaire."
+    }
+  ],
+  "activityLogs": [
+    {
+      "id": "log-1786628277294",
+      "type": "lead_qualified",
+      "message": "[Mémoire Prospect] Ré-engagement de Adama Traoré pour Faso Solaire Solutions (appointment) - Nouveau Score : 85/100",
+      "timestamp": "2026-08-13T13:37:57.294Z"
+    },
+    {
+      "id": "log-1786628269649",
+      "type": "lead_new",
+      "message": "Nouveau prospect qualifié par l'IA : Bintou Sanou (Académie Tech du Houet) - Score : 10/100",
+      "timestamp": "2026-08-13T13:37:49.649Z"
+    },
+    {
+      "id": "log-1786628262158",
+      "type": "lead_new",
+      "message": "Nouveau prospect qualifié par l'IA : Adama Traoré (Faso Solaire Solutions) - Score : 95/100",
+      "timestamp": "2026-08-13T13:37:42.158Z"
+    },
+    {
+      "id": "log-1786628255224",
+      "type": "lead_new",
+      "message": "Nouveau prospect qualifié par l'IA : Mamadou (Faso Solaire Solutions) - Score : 80/100",
+      "timestamp": "2026-08-13T13:37:35.224Z"
+    },
+    {
+      "id": "log-1786628247913",
+      "type": "compliance_warning",
+      "message": "[ALERTE SÉCURITÉ] Prospect suspect 'Hacker SELECT' bloqué/flaggué par le Guardian AI.",
+      "timestamp": "2026-08-13T13:37:27.913Z"
+    },
+    {
+      "id": "log-1786628240223",
+      "type": "security_alert",
+      "message": "[Sécurité] Tentative d'activité suspecte bloquée/signalée pour le prospect Hacker SELECT.",
+      "timestamp": "2026-08-13T13:37:20.223Z"
+    },
+    {
+      "id": "log-1786617565894",
+      "type": "distribution_success",
+      "message": "[Distribution] Opportunité transmise avec succès à Sinergi Solaire S.A.R.L. via Email et WhatsApp.",
+      "timestamp": "2026-08-13T10:39:25.894Z"
+    },
+    {
+      "id": "log-1786617565894",
+      "type": "lead_qualified",
+      "message": "Nouveau prospect qualifié par l'IA : Ibrahim Sawadogo (Faso Solaire Solutions) - Score : 65/100",
+      "timestamp": "2026-08-13T10:39:25.894Z"
+    },
+    {
+      "id": "log-1",
+      "type": "system",
+      "message": "Initialisation réussie de la plateforme LeadFactory Africa AI à Bobo-Dioulasso.",
+      "timestamp": "2026-07-20T01:00:00Z"
+    },
+    {
+      "id": "log-2",
+      "type": "site_created",
+      "message": "Nouveau microsite déployé : Académie Tech du Houet.",
+      "timestamp": "2026-07-20T02:30:00Z"
+    },
+    {
+      "id": "log-3",
+      "type": "lead_new",
+      "message": "Nouveau prospect reçu : Ousmane Ouédraogo (Solaire Bobo).",
+      "timestamp": "2026-07-20T05:30:00Z"
+    },
+    {
+      "id": "log-4",
+      "type": "lead_qualified",
+      "message": "Qualification IA effectuée pour Ousmane Ouédraogo. Score : 95/100 (Prospect Chaud).",
+      "timestamp": "2026-07-20T05:31:00Z"
+    },
+    {
+      "id": "log-5",
+      "type": "partner_matched",
+      "message": "Prospect Ousmane Ouédraogo automatiquement affecté à Sinergi Solaire S.A.R.L. via Distribution Intelligente.",
+      "timestamp": "2026-07-20T05:32:00Z"
+    }
+  ],
+  "securityEvents": [
+    {
+      "id": "sec-1",
+      "timestamp": "2026-07-20T01:00:00Z",
+      "eventType": "access_grant",
+      "description": "Vérification des droits d'accès RBAC : Admin connecté.",
+      "severity": "info"
+    },
+    {
+      "id": "sec-2",
+      "timestamp": "2026-07-20T02:00:00Z",
+      "eventType": "backup_scheduled",
+      "description": "Sauvegarde automatisée du registre central CIL complétée.",
+      "severity": "info"
+    }
+  ]
+}

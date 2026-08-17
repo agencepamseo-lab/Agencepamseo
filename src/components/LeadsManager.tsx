@@ -13,26 +13,30 @@ interface LeadsManagerProps {
   onUpdateLead: (leadId: string, updates: { status?: Lead['status']; assignedPartnerId?: string | null }) => void;
 }
 
-export default function LeadsManager({ leads, partners, activityLogs, onUpdateLead }: LeadsManagerProps) {
+export default function LeadsManager({ leads = [], partners = [], activityLogs = [], onUpdateLead }: LeadsManagerProps) {
+  const safeLeads = Array.isArray(leads) ? leads : [];
+  const safePartners = Array.isArray(partners) ? partners : [];
+  const safeLogs = Array.isArray(activityLogs) ? activityLogs : [];
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(leads[0]?.id || null);
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(safeLeads[0]?.id || null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const selectedLead = leads.find(l => l.id === selectedLeadId) || leads[0];
+  const selectedLead = safeLeads.find(l => l.id === selectedLeadId) || safeLeads[0];
 
   // Calculations
-  const totalLeads = leads.length;
-  const avgScore = totalLeads > 0 ? Math.round(leads.reduce((acc, l) => acc + l.score, 0) / totalLeads) : 0;
-  const soldLeads = leads.filter(l => l.status === 'sold').length;
+  const totalLeads = safeLeads.length;
+  const avgScore = totalLeads > 0 ? Math.round(safeLeads.reduce((acc, l) => acc + (l.score || 0), 0) / totalLeads) : 0;
+  const soldLeads = safeLeads.filter(l => l.status === 'sold').length;
   const conversionRate = totalLeads > 0 ? Math.round((soldLeads / totalLeads) * 100) : 0;
-  const newLeads = leads.filter(l => l.status === 'new').length;
+  const newLeads = safeLeads.filter(l => l.status === 'new').length;
 
   // Filters
-  const filteredLeads = leads.filter(lead => {
-    const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          lead.rawMessage.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          lead.phone.includes(searchTerm);
+  const filteredLeads = safeLeads.filter(lead => {
+    const matchesSearch = (lead.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (lead.rawMessage || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (lead.phone || '').includes(searchTerm);
     const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
     return matchesSearch && matchesStatus;
   });

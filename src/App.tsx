@@ -8,16 +8,19 @@ import PartnerWorkspace from './components/PartnerWorkspace';
 import MicrositePreview from './components/MicrositePreview';
 import AgentCompliance from './components/AgentCompliance';
 import AgentSecurity from './components/AgentSecurity';
+import CampaignIntelligence from './components/CampaignIntelligence';
+import DynamicLeadFactoryPage from './components/DynamicLeadFactoryPage';
 import { 
   Building2, Sparkles, Database, RefreshCw, Layers, TrendingUp, 
   MapPin, HelpCircle, Laptop, Landmark, Smartphone, Play, 
   Trash2, Globe, Bot, ChevronRight, CheckCircle2, Award, Plus,
-  ShieldCheck, Lock
+  ShieldCheck, Lock, Target, Sliders
 } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'market' | 'generator' | 'leads' | 'partners' | 'workspace' | 'compliance' | 'security'>('market');
+  const [activeTab, setActiveTab] = useState<'market' | 'generator' | 'leads' | 'partners' | 'campaigns' | 'lead-factory' | 'workspace' | 'compliance' | 'security'>('lead-factory');
   const [userRole, setUserRole] = useState<'admin' | 'manager' | 'partner'>('admin');
+  const [selectedSiteForLeadFactory, setSelectedSiteForLeadFactory] = useState<string>('');
   const [dbState, setDbState] = useState<DBState>({
     sites: [],
     leads: [],
@@ -40,8 +43,20 @@ export default function App() {
     setIsDbLoading(true);
     try {
       const response = await fetch('/api/data');
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
       const data = await response.json();
-      setDbState(data);
+      if (data && typeof data === 'object') {
+        setDbState({
+          sites: Array.isArray(data.sites) ? data.sites : [],
+          leads: Array.isArray(data.leads) ? data.leads : [],
+          partners: Array.isArray(data.partners) ? data.partners : [],
+          marketTrends: Array.isArray(data.marketTrends) ? data.marketTrends : [],
+          activityLogs: Array.isArray(data.activityLogs) ? data.activityLogs : [],
+          securityEvents: Array.isArray(data.securityEvents) ? data.securityEvents : []
+        });
+      }
     } catch (error) {
       console.error('Failed to fetch DB state:', error);
     } finally {
@@ -191,7 +206,7 @@ export default function App() {
       .replace('XOF', 'FCFA');
   };
 
-  const totalRevenues = dbState.partners.reduce((sum, p) => sum + p.revenueGenerated, 0);
+  const totalRevenues = (dbState.partners || []).reduce((sum, p) => sum + (p.revenueGenerated || 0), 0);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
@@ -225,17 +240,17 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-600 font-medium bg-slate-50 border border-slate-200/60 rounded-2xl px-5 py-2.5">
             <div className="flex items-center gap-1.5">
               <Globe className="w-4 h-4 text-indigo-500" />
-              <span><strong>{dbState.sites.length}</strong> Sites actifs</span>
+              <span><strong>{(dbState.sites || []).length}</strong> Sites actifs</span>
             </div>
             <div className="h-4 w-[1px] bg-slate-200 hidden sm:block" />
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-amber-500" />
-              <span><strong>{dbState.leads.length}</strong> Prospects qualifiés</span>
+              <span><strong>{(dbState.leads || []).length}</strong> Prospects qualifiés</span>
             </div>
             <div className="h-4 w-[1px] bg-slate-200 hidden sm:block" />
             <div className="flex items-center gap-1.5">
               <Building2 className="w-4 h-4 text-emerald-500" />
-              <span><strong>{dbState.partners.length}</strong> Partenaires</span>
+              <span><strong>{(dbState.partners || []).length}</strong> Partenaires</span>
             </div>
             <div className="h-4 w-[1px] bg-slate-200 hidden sm:block" />
             <div className="flex items-center gap-1.5">
@@ -347,6 +362,32 @@ export default function App() {
                     <span>4. Entreprises Partenaires</span>
                   </button>
 
+                  {/* Added Campaign Intelligence Tab (P0.2) */}
+                  <button 
+                    onClick={() => setActiveTab('campaigns')}
+                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold transition flex items-center gap-3 cursor-pointer ${
+                      activeTab === 'campaigns' 
+                        ? 'bg-indigo-600/10 text-indigo-300 border border-indigo-500/10' 
+                        : 'hover:bg-slate-900 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Target className="w-4 h-4 text-emerald-400" />
+                    <span>5. Campaign Intelligence (P0.2)</span>
+                  </button>
+
+                  {/* Added P0.5 Dynamic Lead Factory Page Tab */}
+                  <button 
+                    onClick={() => setActiveTab('lead-factory')}
+                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold transition flex items-center gap-3 cursor-pointer ${
+                      activeTab === 'lead-factory' 
+                        ? 'bg-indigo-600/10 text-indigo-300 border border-indigo-500/10' 
+                        : 'hover:bg-slate-900 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Globe className="w-4 h-4 text-indigo-400" />
+                    <span>6. Page Lead Factory (P0.5)</span>
+                  </button>
+
                   {/* Added CIL Compliance Tab for Admin and Manager roles */}
                   <button 
                     onClick={() => setActiveTab('compliance')}
@@ -357,7 +398,7 @@ export default function App() {
                     }`}
                   >
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span>5. Agent Compliance</span>
+                    <span>7. Agent Compliance</span>
                   </button>
 
                   {/* Added Security Guardian Tab only for Admin */}
@@ -371,7 +412,7 @@ export default function App() {
                       }`}
                     >
                       <Lock className="w-4 h-4 text-rose-400" />
-                      <span>6. Agent Sécurité IA</span>
+                      <span>8. Agent Sécurité IA</span>
                     </button>
                   )}
                 </nav>
@@ -449,6 +490,7 @@ export default function App() {
                 <PartnersManager 
                   partners={dbState.partners} 
                   onAddPartner={handleAddPartner} 
+                  onRefresh={fetchDbState}
                 />
               )}
 
@@ -457,6 +499,28 @@ export default function App() {
                   leads={dbState.leads} 
                   partners={dbState.partners} 
                   onUpdateLead={handleUpdateLead} 
+                />
+              )}
+
+              {activeTab === 'campaigns' && userRole !== 'partner' && (
+                <CampaignIntelligence 
+                  sites={dbState.sites}
+                  leads={dbState.leads}
+                  partners={dbState.partners}
+                  onRefreshData={fetchDbState}
+                />
+              )}
+
+              {activeTab === 'lead-factory' && (
+                <DynamicLeadFactoryPage 
+                  sites={dbState.sites}
+                  currentSiteId={selectedSiteForLeadFactory || dbState.sites[0]?.id}
+                  onLeadCreated={() => {
+                    fetchDbState();
+                  }}
+                  onSiteUpdated={() => {
+                    fetchDbState();
+                  }}
                 />
               )}
 
@@ -541,7 +605,19 @@ export default function App() {
                           className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer"
                         >
                           <Smartphone className="w-3.5 h-3.5" />
-                          <span>Aperçu Interactif</span>
+                          <span>Aperçu Site</span>
+                        </button>
+
+                        <button 
+                          onClick={() => {
+                            setSelectedSiteForLeadFactory(site.id);
+                            setActiveTab('lead-factory');
+                          }}
+                          className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer"
+                          title="Ouvrir la page Lead Factory de ce site"
+                        >
+                          <Globe className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Lead Factory</span>
                         </button>
                         
                         <button 

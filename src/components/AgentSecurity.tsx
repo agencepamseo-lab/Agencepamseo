@@ -10,7 +10,8 @@ interface AgentSecurityProps {
   onTriggerBackup: () => Promise<{ success: boolean; backupId: string; timestamp: string } | null>;
 }
 
-export default function AgentSecurity({ securityEvents, onTriggerBackup }: AgentSecurityProps) {
+export default function AgentSecurity({ securityEvents = [], onTriggerBackup }: AgentSecurityProps) {
+  const safeEvents = Array.isArray(securityEvents) ? securityEvents : [];
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [lastBackup, setLastBackup] = useState<{ id: string; timestamp: string } | null>(null);
 
@@ -138,7 +139,7 @@ export default function AgentSecurity({ securityEvents, onTriggerBackup }: Agent
           </div>
 
           <div className="space-y-4 max-h-96 overflow-y-auto pr-2 text-[11px] leading-relaxed">
-            {securityEvents.map((event) => (
+            {safeEvents.map((event) => (
               <div key={event.id} className="p-3 bg-slate-900/60 rounded-xl border border-slate-900 space-y-2">
                 <div className="flex justify-between items-start gap-3">
                   <span className="text-slate-500 text-[10px] shrink-0">
@@ -152,7 +153,7 @@ export default function AgentSecurity({ securityEvents, onTriggerBackup }: Agent
               </div>
             ))}
 
-            {securityEvents.length === 0 && (
+            {safeEvents.length === 0 && (
               <div className="py-12 text-center text-slate-500 italic">
                 Aucun incident de sécurité enregistré. Le système d'acquisition autonome est entièrement protégé.
               </div>
