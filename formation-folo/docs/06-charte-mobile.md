@@ -35,4 +35,12 @@ sacrifier le français ni la cohérence d'identité.
 | Points progression | 26 px ; acquis = orange + coche blanche ; à venir = blanc 25 % |
 | Corps minimal | 28 px dans les cartes claires (lisibilité smartphone) |
 
+## Décision de révision n° 1 (commanditaire)
+
+Corps de texte de l'édition mobile augmentés de **+15 %** sur tout le lot 3
+(titres, cartes, boutons, badges), contenants ajustés en suivi ; vérification
+visuelle sans aucun débordement (le badge minuteur de la slide 24 a été
+redimensionné pour préserver le pied de page). Cette échelle devient la norme
+mobile de la formation.
+
 Règle inchangée : **une idée = un slide** ; sur mobile, encore moins d'éléments par slide.
