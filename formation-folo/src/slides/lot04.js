@@ -131,23 +131,49 @@ export function slide34() {
     bgExtras: [d({ position: 'absolute', bottom: -160, right: -140 }, arcs(440, [0.5, 0.72, 0.94], 'rgba(249,123,44,0.10)', 1.4))],
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Méthode 2')),
-      d({ display: 'flex', justifyContent: 'center', marginTop: 24 }, centerTitle('Le design thinking simplifié', 72)),
+      d({ display: 'flex', justifyContent: 'center', marginTop: 24 }, centerTitle('Le design thinking simplifié (1/2)', 64)),
 
-      d({ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 30 }, [
+      d({ display: 'flex', flexDirection: 'column', gap: 22, marginTop: 36 }, [
         step('1', 'users', 'Comprendre l\u2019utilisateur'),
         step('2', 'target', 'Définir le problème'),
         step('3', 'bulb', 'Idéer des solutions'),
-        step('4', 'pencil', 'Prototyper rapidement'),
-        step('5', 'trendUp', 'Tester et améliorer'),
       ]),
-
-      d({ display: 'flex', justifyContent: 'center', alignItems: 'center', background: C.orangeGrad, borderRadius: 20, padding: '20px 40px', marginTop: 22 },
-        d({ fontFamily: F.display, fontWeight: 700, fontSize: 31, color: '#FFFFFF', lineHeight: 1.3 }, 'Une approche centrée sur l\u2019humain.')),
     ],
   });
 }
 
 /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* SLIDE 35 — Design thinking : étapes 4-5                             */
+/* ------------------------------------------------------------------ */
+export function slide34b() {
+  const step = (num, ic, txt) =>
+    d({ ...lightCard(), display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 26, padding: '26px 36px' }, [
+      d({
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        width: 62, height: 62, borderRadius: 31, background: C.orangeGrad, flexShrink: 0,
+        fontFamily: F.display, fontWeight: 800, fontSize: 29, color: '#FFFFFF', lineHeight: 1,
+      }, num),
+      icon(ic, 36, ORANGE, 2),
+      d({ fontFamily: F.body, fontWeight: 700, fontSize: 32, color: MC.ink, lineHeight: 1.3 }, txt),
+    ]);
+
+  return slide({
+    page: 35,
+    headerOpts: { crumb: CRUMB, seq: SEQ2 },
+    children: [
+      d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Méthode 2 · suite')),
+      d({ display: 'flex', justifyContent: 'center', marginTop: 24 }, centerTitle('Le design thinking simplifié (2/2)', 64)),
+      d({ display: 'flex', flexDirection: 'column', gap: 26, marginTop: 56 }, [
+        step('4', 'pencil', 'Prototyper rapidement'),
+        step('5', 'trendUp', 'Tester et améliorer'),
+      ]),
+      d({ display: 'flex', justifyContent: 'center', alignItems: 'center', background: C.orangeGrad, borderRadius: 20, padding: '24px 44px', marginTop: 60 },
+        d({ fontFamily: F.display, fontWeight: 700, fontSize: 33, color: '#FFFFFF', lineHeight: 1.3 }, 'Une approche centrée sur l\u2019humain.')),
+    ],
+  });
+}
+
 /* SLIDE 35 — Exemple : le design thinking à Bamako                    */
 /* ------------------------------------------------------------------ */
 export function slide35() {
@@ -161,7 +187,7 @@ export function slide35() {
     ]);
 
   return slide({
-    page: 35,
+    page: 36,
     headerOpts: { crumb: CRUMB, seq: SEQ2 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Exemple · Bamako')),
@@ -193,7 +219,7 @@ export function slide36() {
     ]);
 
   return slide({
-    page: 36,
+    page: 37,
     headerOpts: { crumb: CRUMB, seq: SEQ2 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Quiz express')),
@@ -228,7 +254,7 @@ export function slide37() {
     ]);
 
   return slide({
-    page: 37,
+    page: 38,
     headerOpts: { crumb: CRUMB, seq: SEQ2 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Votre tour')),
@@ -256,7 +282,7 @@ export function slide38() {
     ]);
 
   return slide({
-    page: 38,
+    page: 39,
     headerOpts: { crumb: CRUMB, seq: SEQ2 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Ressources')),
@@ -291,7 +317,7 @@ export function slide39() {
     ]);
 
   return slide({
-    page: 39,
+    page: 40,
     headerOpts: { crumb: CRUMB, seq: SEQ2 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Validation')),
@@ -323,7 +349,7 @@ export function slide40() {
     ]);
 
   return slide({
-    page: 40,
+    page: 41,
     headerOpts: { crumb: CRUMB, seq: SEQ2 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Progression')),
@@ -348,4 +374,4 @@ export function slide40() {
   });
 }
 
-export const LOT_04 = [slide31, slide32, slide33, slide34, slide35, slide36, slide37, slide38, slide39, slide40];
+export const LOT_04 = [slide31, slide32, slide33, slide34, slide34b, slide35, slide36, slide37, slide38, slide39, slide40];

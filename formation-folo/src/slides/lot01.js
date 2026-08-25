@@ -31,8 +31,8 @@ export function slide01() {
           justifyContent: 'center',
           width: '100%',
           height: '100%',
-          paddingLeft: 120,
-          paddingRight: 120,
+          paddingLeft: 192,
+          paddingRight: 192,
           boxSizing: 'border-box',
         },
         [

@@ -43,6 +43,6 @@ export const T = {
   labelGrey: { fontFamily: F.body, fontWeight: 600, fontSize: 20, letterSpacing: 4, color: C.greyDim },
 };
 
-// Marges cadres
-export const PAD_X = 120;
+// Marges cadres — zones de sécurité mobile : 10 % latéraux (192 px sur 1920)
+export const PAD_X = 192;
 export const PAD_TOP = 76;

@@ -17,7 +17,7 @@ const SEQ3 = { n: 3, total: 4 };
 /* ------------------------------------------------------------------ */
 export function slide41() {
   return slide({
-    page: 41,
+    page: 42,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     bgExtras: [d({ position: 'absolute', top: 140, right: 80 }, dotGrid(7, 6, 28, 2.4, 'rgba(255,255,255,0.06)'))],
     children: [
@@ -55,7 +55,7 @@ export function slide42() {
     ]);
 
   return slide({
-    page: 42,
+    page: 43,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Pourquoi choisir')),
@@ -93,24 +93,57 @@ export function slide43() {
     ]);
 
   return slide({
-    page: 43,
+    page: 44,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Les 5 critères FOLO')),
-      d({ display: 'flex', justifyContent: 'center', marginTop: 24 }, centerTitle('La check-list qui décide pour vous', 66)),
+      d({ display: 'flex', justifyContent: 'center', marginTop: 24 }, centerTitle('La check-list qui décide pour vous (1/2)', 60)),
 
-      d({ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 40 }, [
+      d({ display: 'flex', flexDirection: 'column', gap: 24, marginTop: 44 }, [
         crit('1', 'target', 'PROBLÈME RÉEL', 'Le problème existe, il est vécu, pas supposé.'),
         crit('2', 'users', 'CLIENTS CAPABLES', 'Des personnes qui peuvent payer, près de vous.'),
         crit('3', 'coins', 'RESSOURCES ACCESSIBLES', 'Ce qu\u2019il faut existe autour de vous, sans ruine.'),
-        crit('4', 'pencil', 'VOS COMPÉTENCES', 'Vous savez faire, ou vous apprenez vite.'),
-        crit('5', 'flag', 'ENVIE DURABLE', 'Vous tiendrez sur la durée, même les jours difficiles.'),
       ]),
     ],
   });
 }
 
 /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* SLIDE 45 — Critères FOLO 4-5                                        */
+/* ------------------------------------------------------------------ */
+export function slide43b() {
+  const crit = (num, ic, title, txt) =>
+    d({ ...lightCard(), display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 24, padding: '26px 36px' }, [
+      d({
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        width: 60, height: 60, borderRadius: 30, background: C.orangeGrad, flexShrink: 0,
+        fontFamily: F.display, fontWeight: 800, fontSize: 28, color: '#FFFFFF', lineHeight: 1,
+      }, num),
+      icon(ic, 34, ORANGE, 2),
+      d({ display: 'flex', flexDirection: 'column', gap: 4 }, [
+        d({ fontFamily: F.display, fontWeight: 800, fontSize: 29, color: MC.ink, lineHeight: 1.15 }, title),
+        d({ fontFamily: F.body, fontWeight: 500, fontSize: 25, color: MC.inkSoft, lineHeight: 1.3 }, txt),
+      ]),
+    ]);
+
+  return slide({
+    page: 45,
+    headerOpts: { crumb: CRUMB, seq: SEQ3 },
+    children: [
+      d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Les 5 critères FOLO · suite')),
+      d({ display: 'flex', justifyContent: 'center', marginTop: 24 }, centerTitle('La check-list qui décide pour vous (2/2)', 58)),
+      d({ display: 'flex', flexDirection: 'column', gap: 26, marginTop: 60 }, [
+        crit('4', 'pencil', 'VOS COMPÉTENCES', 'Vous savez faire, ou vous apprenez vite.'),
+        crit('5', 'flag', 'ENVIE DURABLE', 'Vous tiendrez sur la durée, même les jours difficiles.'),
+      ]),
+      d({ display: 'flex', justifyContent: 'center', alignItems: 'center', background: C.orangeSoft, border: `1.5px solid ${C.orangeBorder}`, borderRadius: 20, padding: '24px 44px', marginTop: 60 },
+        d({ fontFamily: F.body, fontWeight: 600, fontSize: 30, color: 'rgba(255,255,255,0.94)', lineHeight: 1.4, textAlign: 'center' },
+          'Une idée doit cocher les 5 cases pour viser « FONCEZ ».')),
+    ],
+  });
+}
+
 /* SLIDE 44 — La grille, mode d'emploi                                 */
 /* ------------------------------------------------------------------ */
 export function slide44() {
@@ -127,7 +160,7 @@ export function slide44() {
     ]);
 
   return slide({
-    page: 44,
+    page: 46,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('La méthode')),
@@ -159,7 +192,7 @@ export function slide45() {
     ]);
 
   return slide({
-    page: 45,
+    page: 47,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Exemple corrigé')),
@@ -189,7 +222,7 @@ export function slide45() {
 /* ------------------------------------------------------------------ */
 export function slide46() {
   return slide({
-    page: 46,
+    page: 48,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Exercice')),
@@ -215,7 +248,7 @@ export function slide46() {
 /* ------------------------------------------------------------------ */
 export function slide47() {
   return slide({
-    page: 47,
+    page: 49,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 44 }, [
@@ -244,7 +277,7 @@ export function slide48() {
     ]);
 
   return slide({
-    page: 48,
+    page: 50,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Quiz express')),
@@ -280,7 +313,7 @@ export function slide49() {
     ]);
 
   return slide({
-    page: 49,
+    page: 51,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Synthèse de la séquence')),
@@ -315,7 +348,7 @@ export function slide50() {
     ]);
 
   return slide({
-    page: 50,
+    page: 52,
     headerOpts: { crumb: CRUMB, seq: SEQ3 },
     children: [
       d({ display: 'flex', justifyContent: 'center', marginTop: 4 }, kicker('Progression')),
@@ -337,4 +370,4 @@ export function slide50() {
   });
 }
 
-export const LOT_05 = [slide41, slide42, slide43, slide44, slide45, slide46, slide47, slide48, slide49, slide50];
+export const LOT_05 = [slide41, slide42, slide43, slide43b, slide44, slide45, slide46, slide47, slide48, slide49, slide50];
