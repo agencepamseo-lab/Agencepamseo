@@ -28,11 +28,13 @@ export async function renderSlide(tree, outPath) {
 }
 
 const lotName = process.argv[2] || 'lot01';
-const { LOT_01 } = await import('../src/slides/lot01.js');
-const slides = LOT_01;
+const startNum = Number(process.argv[3] || 1);
+const slides = lotName === 'lot02'
+  ? (await import('../src/slides/lot02.js')).LOT_02
+  : (await import('../src/slides/lot01.js')).LOT_01;
 
 mkdirSync(`renders/${lotName}`, { recursive: true });
-let i = 1;
+let i = startNum;
 for (const make of slides) {
   const t0 = Date.now();
   try {

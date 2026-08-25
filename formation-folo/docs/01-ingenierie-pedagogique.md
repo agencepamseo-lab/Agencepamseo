@@ -186,3 +186,28 @@ le module suivant (logique d'entonnoir : 10 problèmes → 3 opportunités → 5
 - Slides par module : 12 à 14 (ouverture, objectifs, 3-4 notions, 1-2 exemples,
   1 méthode, 1 exercice, 1 synthèse, 1 action, 1 transition)
 - **Total estimé : 100 à 115 slides**, produits par lots de 10 validés.
+
+---
+
+## 7. Annexe — Script de référence fourni par le commanditaire (Module 1)
+
+Le commanditaire a fourni le script détaillé du module 1, qui fait foi pour la
+production. Structure retenue :
+
+**MODULE 1 — IDENTIFICATION D'OPPORTUNITÉS** (verbe du parcours : COMPRENDRE)
+
+| Séquence | Intitulé | Durée | Livrables |
+|---|---|---|---|
+| 1.1 | Sources d'opportunités | 15 min | 3 sources identifiées, 5 idées notées, fiche exercice |
+| 1.2 | Techniques de créativité | 20 min | 10 idées générées (brainstorming structuré, design thinking simplifié) |
+| 1.3 | Critères de sélection | 15 min | Idées classées et top retenu |
+| 1.4 | Du problème au premier test | 20 min | Idée formulée + test engagé |
+
+Les slides 01-10 (lot 1) constituent l'introduction générale et le socle notionnel du
+module (définition, réflexe FOLO, distinction idée/opportunité). Les slides 11-20
+(lot 2) couvrent la séquence 1.1. Les ressources téléchargeables annoncées sur les
+slides (fiche exercice, grille d'idéation, fiche d'auto-évaluation) sont signalées par
+une pastille dédiée ; leur production PDF suivra la validation des slides.
+
+Études de cas validées par le script : Fatou (Ouagadougou), transformation de mangues
+(40 % de pertes → unité de séchage → 15 emplois, export sous-régional, 25 M FCFA de CA).
