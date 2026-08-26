@@ -107,11 +107,11 @@ export function slide23() {
       d({ display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: 24, marginTop: 46 }, [
         d({ ...panel(), display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 14, padding: '18px 30px', borderRadius: 999 }, [
           icon('alert', 28, ORANGE, 2.2),
-          d({ fontFamily: F.body, fontWeight: 500, fontSize: 29, color: C.grey, lineHeight: 1.3 }, 'Coupures d\u2019électricité → solutions solaires'),
+          d({ fontFamily: F.body, fontWeight: 500, fontSize: 29, color: C.grey, lineHeight: 1.3 }, 'Coupures d\u2019électricité : le solaire comme réponse'),
         ]),
         d({ ...panel(), display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 14, padding: '18px 30px', borderRadius: 999 }, [
           icon('alert', 28, ORANGE, 2.2),
-          d({ fontFamily: F.body, fontWeight: 500, fontSize: 29, color: C.grey, lineHeight: 1.3 }, 'Transport difficile → services de livraison'),
+          d({ fontFamily: F.body, fontWeight: 500, fontSize: 29, color: C.grey, lineHeight: 1.3 }, 'Transport difficile : la livraison comme réponse'),
         ]),
       ]),
     ],
