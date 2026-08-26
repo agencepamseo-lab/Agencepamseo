@@ -10,7 +10,7 @@ import { MC, lightCard, centerTitle, button, dots, timerBadge } from '../dsm.js'
 
 const ORANGE = C.orange;
 const CRUMB = 'Module 1.3 · Critères de sélection';
-const SEQ3 = { n: 3, total: 4 };
+const SEQ3 = { n: 3, total: 3 };
 
 /* ------------------------------------------------------------------ */
 /* SLIDE 41 — Ouverture de la séquence 1.3                             */
@@ -35,8 +35,8 @@ export function slide41() {
       ]),
 
       d({ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 28, marginTop: 56, alignSelf: 'center' }, [
-        dots(3, 4),
-        d({ fontFamily: F.body, fontWeight: 700, fontSize: 30, letterSpacing: 1.5, color: C.grey, lineHeight: 1 }, '75 % DU MODULE'),
+        dots(3, 3),
+        d({ fontFamily: F.body, fontWeight: 700, fontSize: 30, letterSpacing: 1.5, color: C.grey, lineHeight: 1 }, '100 % DU MODULE'),
       ]),
     ],
   });

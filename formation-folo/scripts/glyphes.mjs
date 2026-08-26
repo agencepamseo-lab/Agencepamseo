@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 const BANNIS = ['≈', '≠', '≤', '≥', 'œ', 'Œ', '→', '←', '↑', '↓', '⇒', '★', '☆', '€', '£', '¥', '✓', '✗'];
 const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/u;
 
-const files = ['lot01', 'lot02', 'lot03', 'lot04', 'lot05'].map((l) => `src/slides/${l}.js`);
+const files = ['lot01', 'lot02', 'lot03', 'lot04', 'lot05', 'mod001'].map((l) => `src/slides/${l}.js`);
 let fails = 0;
 for (const f of files) {
   let s = readFileSync(f, 'utf8');

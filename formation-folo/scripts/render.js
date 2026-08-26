@@ -35,8 +35,10 @@ const slides = lotName === 'lot02'
     ? (await import('../src/slides/lot03.js')).LOT_03
     : lotName === 'lot04'
       ? (await import('../src/slides/lot04.js')).LOT_04
-      : lotName === 'lot05'
-        ? (await import('../src/slides/lot05.js')).LOT_05
+    : lotName === 'lot05'
+      ? (await import('../src/slides/lot05.js')).LOT_05
+      : lotName === 'mod001'
+        ? (await import('../src/slides/mod001.js')).LOT_MOD001
         : (await import('../src/slides/lot01.js')).LOT_01;
 
 mkdirSync(`renders/${lotName}`, { recursive: true });

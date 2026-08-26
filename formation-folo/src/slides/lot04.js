@@ -10,7 +10,7 @@ import { MC, lightCard, centerTitle, button, buttonOutline, dots, timerBadge } f
 
 const ORANGE = C.orange;
 const CRUMB = 'Module 1.2 · Techniques de créativité';
-const SEQ2 = { n: 2, total: 4 };
+const SEQ2 = { n: 2, total: 3 };
 
 /* ------------------------------------------------------------------ */
 /* SLIDE 31 — Ouverture de la séquence 1.2                             */
@@ -35,8 +35,8 @@ export function slide31() {
       ]),
 
       d({ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 28, marginTop: 56, alignSelf: 'center' }, [
-        dots(2, 4),
-        d({ fontFamily: F.body, fontWeight: 700, fontSize: 30, letterSpacing: 1.5, color: C.grey, lineHeight: 1 }, '50 % DU MODULE'),
+        dots(2, 3),
+        d({ fontFamily: F.body, fontWeight: 700, fontSize: 30, letterSpacing: 1.5, color: C.grey, lineHeight: 1 }, '67 % DU MODULE'),
       ]),
     ],
   });

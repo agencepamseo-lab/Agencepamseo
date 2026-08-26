@@ -4,7 +4,7 @@
 // numéros `page:` des sources vs plages master, noms de fichiers vs numéros.
 // Sort en code 1 si anomalie. À exécuter après chaque lot / renumérotation.
 // ---------------------------------------------------------------------------
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 
 const MASTER = [
   // [lot, premier fichier, dernier fichier, premier page: dans les sources]
@@ -43,6 +43,16 @@ for (const [lot, a, b, p0] of MASTER) {
   if (pages.length !== b - p0 + 1) {
     console.log(`[COMPTE] ${lot}: ${pages.length} slides source pour ${b - p0 + 1} attendues`); fails++;
   }
+}
+
+// Pack MOD-001 : fichiers uniquement (les sources conservées portent leurs pages d'origine)
+{
+  const expected = new Set();
+  for (let n = 1; n <= 33; n++) expected.add(`${pad(n)}.png`);
+  const present = existsSync('renders/mod001') ? new Set(readdirSync('renders/mod001').filter((f) => f.endsWith('.png'))) : new Set();
+  if (!existsSync('renders/mod001')) { console.log('[MANQUANT] renders/mod001 (dossier absent)'); fails++; }
+  for (const f of [...present]) if (!expected.has(f)) { console.log(`[ORPHELIN] renders/mod001/${f}`); fails++; }
+  for (const f of [...expected]) if (!present.has(f)) { console.log(`[MANQUANT] renders/mod001/${f}`); fails++; }
 }
 
 if (fails) { console.log(`\nINTÉGRITÉ : ${fails} anomalie(s).`); process.exit(1); }

@@ -30,7 +30,8 @@ export function wordmark(size = 30) {
 }
 
 /** En-tête standard : marque + contexte à gauche, progression à droite. */
-export function header({ crumb, seq = null, module = null, rightText = null }) {
+export function header({ crumb, seq: seqArg = null, module = null, rightText = null }) {
+  const seq = SEQ_OVERRIDE ?? seqArg;
   const left = d(
     { display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 22 },
     [
@@ -80,6 +81,16 @@ export function header({ crumb, seq = null, module = null, rightText = null }) {
 }
 
 /** Pied de page standard. */
+let PAGE_OVERRIDE = null;
+/** Permet au packaging (pack MOD-001) de renuméroter les écrans
+    sans réécrire les slides sources conservées. Null = comportement inchangé. */
+export const setPageOverride = (v) => { PAGE_OVERRIDE = v; };
+
+let SEQ_OVERRIDE = null;
+/** Permet au packaging d'ajuster le dénominateur de séquence
+    (MOD-001 v01 = 3 séquences ; l'existant affiche 4). Null = inchangé. */
+export const setSeqOverride = (v) => { SEQ_OVERRIDE = v; };
+
 export function footer(page) {
   return d(
     { display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: 34 },
@@ -127,7 +138,7 @@ export function slide({ page, headerOpts = null, bgExtras = [], children, padTop
       [
         ...(headerOpts ? [d({ marginBottom: 44 }, header(headerOpts))] : []),
         d({ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }, children),
-        footer(page),
+        footer(PAGE_OVERRIDE ?? page),
       ]
     ),
   ];

@@ -11,7 +11,7 @@ import { MC, lightCard, centerTitle, button, buttonOutline, dots, timerBadge, bi
 
 const ORANGE = C.orange;
 const CRUMB = 'Module 1.1 · Sources d\u2019opportunités';
-const SEQ1 = { n: 1, total: 4 };
+const SEQ1 = { n: 1, total: 3 };
 
 const fatouBuf = readFileSync(new URL('../../assets/fatou.jpg', import.meta.url));
 const FATOU = 'data:image/jpeg;base64,' + fatouBuf.toString('base64');
@@ -44,8 +44,8 @@ export function slide21() {
       ]),
 
       d({ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 28, marginTop: 56, alignSelf: 'center' }, [
-        dots(1, 4),
-        d({ fontFamily: F.body, fontWeight: 700, fontSize: 30, letterSpacing: 1.5, color: C.grey, lineHeight: 1 }, '25 % DU MODULE'),
+        dots(1, 3),
+        d({ fontFamily: F.body, fontWeight: 700, fontSize: 30, letterSpacing: 1.5, color: C.grey, lineHeight: 1 }, '33 % DU MODULE'),
       ]),
     ],
   });
@@ -366,7 +366,7 @@ export function slide30() {
         centerTitle('Félicitations !', 92),
         icon('trophy', 172, ORANGE, 1.5),
         d({ fontFamily: F.display, fontWeight: 700, fontSize: 41, color: C.white, lineHeight: 1.2 }, 'Séquence 1.1 terminée'),
-        dots(1, 4),
+        dots(1, 3),
         d({ ...lightCard(), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 26, padding: '34px 54px', borderRadius: 28, marginTop: 8 }, [
           d({ fontFamily: F.body, fontWeight: 700, fontSize: 33, color: MC.ink, lineHeight: 1.3 },
             'Prochaine séquence : Techniques de créativité · 20 min'),
