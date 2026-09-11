@@ -65,6 +65,14 @@ export interface ProspectInteraction {
   details?: string;
 }
 
+export type LeadWorkflowStep =
+  | 'RECEIVED'            // REÇU
+  | 'QUALIFIED'           // QUALIFICATION
+  | 'HUMAN_REVIEW'        // CONTRÔLE HUMAIN
+  | 'WAITING_FOR_OFFER'   // EN ATTENTE D’UNE OFFRE
+  | 'VALIDATED'           // VALIDATION
+  | 'TRANSMITTED';        // TRANSMISSION PARTENAIRE
+
 export interface Lead {
   id: string;
   siteId: string;
@@ -75,7 +83,7 @@ export interface Lead {
   email: string;
   city: string;
   rawMessage: string;
-  status: 'new' | 'contacted' | 'sold' | 'rejected' | 'WAITING_FOR_PARTNER' | string;
+  status: 'new' | 'contacted' | 'sold' | 'rejected' | 'WAITING_FOR_PARTNER' | LeadWorkflowStep | string;
   score: number;
   summarizedNeed: string;
   budget: 'Faible' | 'Moyen' | 'Élevé' | 'Non spécifié';

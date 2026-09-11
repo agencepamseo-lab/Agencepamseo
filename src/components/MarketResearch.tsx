@@ -28,6 +28,7 @@ export default function MarketResearch({ trends = [], onTriggerSiteGeneration }:
     try {
       const response = await fetch('/api/market-analysis', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ city, sector })
       });

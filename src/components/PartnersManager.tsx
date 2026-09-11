@@ -62,6 +62,7 @@ export default function PartnersManager({ partners = [], onAddPartner, onRefresh
       const amount = partner.subscriptionPlan === 'Premium' ? 90000 : (partner.subscriptionPlan === 'Business' ? 35000 : 10000);
       const res = await fetch(`/api/partners/${partner.id}/payment`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ paymentReference: ref, amount, extendDays: 30 })
       });
@@ -84,6 +85,7 @@ export default function PartnersManager({ partners = [], onAddPartner, onRefresh
     try {
       const res = await fetch(`/api/partners/${partner.id}/suspend`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason })
       });
@@ -105,6 +107,7 @@ export default function PartnersManager({ partners = [], onAddPartner, onRefresh
     try {
       const res = await fetch(`/api/partners/${partner.id}/reactivate`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' }
       });
       if (res.ok) {
@@ -121,7 +124,10 @@ export default function PartnersManager({ partners = [], onAddPartner, onRefresh
   const handleAuditSubscriptions = async () => {
     setActionLoading('audit');
     try {
-      const res = await fetch('/api/partners/check-subscriptions', { method: 'POST' });
+      const res = await fetch('/api/partners/check-subscriptions', { 
+        method: 'POST',
+        credentials: 'include'
+      });
       const data = await res.json();
       setAuditMessage(`Audit effectué : ${data.checked} partenaires analysés. ${data.active} actifs et payés, ${data.suspended} suspendus pour impayé/expiration.`);
       if (onRefresh) onRefresh();

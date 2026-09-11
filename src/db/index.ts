@@ -710,9 +710,12 @@ export async function saveCampaign(campaign: CampaignData): Promise<CampaignData
   return campaign;
 }
 
-export async function getLeads(): Promise<Lead[]> {
+export async function getLeads(siteId?: string): Promise<Lead[]> {
   if (drizzleDb) {
-    const rows = await drizzleDb.select().from(schema.leads);
+    const query = siteId 
+      ? drizzleDb.select().from(schema.leads).where(eq(schema.leads.siteId, siteId))
+      : drizzleDb.select().from(schema.leads);
+    const rows = await query;
     return rows.map(r => ({
       id: r.id,
       siteId: r.siteId,
@@ -748,8 +751,12 @@ export async function getLeads(): Promise<Lead[]> {
       distributionType: r.distributionType as any
     }));
   }
+  if (siteId) {
+    return fileState.leads.filter(l => l.siteId === siteId);
+  }
   return fileState.leads;
 }
+
 
 export async function saveLead(lead: Lead): Promise<Lead> {
   if (drizzleDb) {

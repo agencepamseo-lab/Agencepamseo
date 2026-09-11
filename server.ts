@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import crypto from "crypto";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
@@ -59,85 +60,197 @@ if (apiKey) {
 const app = express();
 app.use(express.json());
 
+// Dynamic CORS & Credentials configuration for dashboard and iframe contexts
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token, x-api-key, x-leadfactory-key, x-session-id, x-operator-token');
+  }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 // ==========================================
-// MOCK DATABASE & STATE (DEPRECATED - Using DB DAL)
+// CENTRALIZED AUTHENTICATION & ACCESS CONTROL MIDDLEWARE
 // ==========================================
 
+export interface AuthenticatedClient {
+  siteId: string;
+  siteTitle: string;
+  theme: string;
+  role: 'site' | 'admin';
+}
 
-// Initial state is managed by src/db/index.ts DAL
-let db: any = {};
-/*
-        justification: "Le site respecte les exigences de la Loi N°001-2021/AN du Burkina Faso sur la protection des données personnelles.",
-        consentNotice: "Formulaire intégrant une case à cocher explicite pour la transmission des données de contact.",
-        legalMentions: "Mentions légales identifiant clairement l'éditeur LeadFactory Africa AI et l'hébergeur agréé.",
-        retractionRights: "Mention explicite du droit d'accès et de rectification auprès de la CIL Burkina.",
-        warnings: []
-      }
-    },
-    {
-      id: "site-2",
-      title: "Académie Tech du Houet",
-      theme: "formation",
-      city: "Bobo-Dioulasso",
-      domain: "formations-ia.leadfactory.africa",
-      status: "active",
-      headline: "Formez-vous aux métiers de l'Intelligence Artificielle et du Digital à Bobo",
-      subheadline: "Des programmes intensifs, pratiques et adaptés au marché burkinabè pour propulser votre carrière ou moderniser votre entreprise.",
-      features: [
-        "Formations 100% pratiques animées par des experts du secteur",
-        "Projets réels et accompagnement à l'insertion professionnelle",
-        "Formules flexibles en cours du soir ou week-end"
-      ],
-      chatbotGreeting: "Bienvenue sur la plateforme de l'Académie Tech ! Quelle compétence digitale souhaitez-vous acquérir (IA, Marketing, Développement Web) à Bobo-Dioulasso ?",
-      chatbotPersona: "Vous êtes un conseiller d'orientation passionné par l'essor du numérique au Burkina Faso. Vous encouragez les jeunes et les professionnels.",
-      faqs: [
-        { question: "Est-ce accessible aux débutants ?", answer: "Absolument ! Nos modules 'Zéro à Héros' ne nécessitent aucun prérequis technique." },
-        { question: "Où se déroulent les cours ?", answer: "Dans nos locaux connectés situés au centre-ville de Bobo-Dioulasso, ou en ligne selon la formule." }
-      ],
-      leadsCount: 9,
-      isCILCompliant: true,
-      complianceRating: 95,
-      complianceReport: {
-        justification: "Le site respecte les standards de la CIL et de la RGPD.",
-        consentNotice: "Case d'acceptation obligatoire avant soumission des coordonnées.",
-        legalMentions: "Mentions légales conformes indiquant l'Académie Tech du Houet comme responsable de traitement.",
-        retractionRights: "Option de désinscription disponible par email direct.",
-        warnings: ["Ajouter le numéro d'agrément de formation professionnelle dès réception."]
-      }
-    },
-    {
-      id: "site-3",
-      title: "Immo-Houet Pro",
-      theme: "immobilier",
-      city: "Bobo-Dioulasso",
-      domain: "immo-bobo.leadfactory.africa",
-      status: "active",
-      headline: "Trouvez votre terrain ou logement idéal à Bobo-Dioulasso sans intermédiaire suspect",
-      subheadline: "Accédez à des offres de location, d'achat de parcelles sécurisées et d'estimations immobilières certifiées par des professionnels agréés.",
-      features: [
-        "Parcelles avec titres fonciers clairs et vérifiés par un notaire",
-        "Visites gratuites et accompagnement personnalisé de A à Z",
-        "Estimation rapide de la valeur locative ou marchande de vos biens"
-      ],
-      chatbotGreeting: "Bonjour ! Cherchez-vous à acheter un terrain sécurisé, louer une villa ou faire estimer un bien immobilier à Bobo-Dioulasso ?",
-      chatbotPersona: "Vous êtes un agent immobilier expérimenté, honnête et très au fait des prix des quartiers comme Sarfalao, Koko et Belleville à Bobo.",
-      faqs: [
-        { question: "Comment être sûr que la parcelle est sécurisée ?", answer: "Chaque terrain proposé sur notre site est audité juridiquement avec un acte de cession ou un titre foncier en règle." },
-        { question: "Faites-vous de la gestion locative ?", answer: "Oui, nos partenaires s'occupent de la perception de vos loyers et de l'entretien de vos immeubles." }
-      ],
-      leadsCount: 18,
-      isCILCompliant: true,
-      complianceRating: 92,
-      complianceReport: {
-        justification: "Données de prospection collectées avec double consentement explicite.",
-        consentNotice: "Consentement séparé pour le traitement local (CIL) et le transfert vers le partenaire immobilier.",
-        legalMentions: "Identité de l'agence immobilière partenaire clairement affichée.",
-        retractionRights: "Droits de retrait exerçables à tout moment.",
-        warnings: ["Le formulaire doit mentionner que les visites de parcelles respectent la réglementation de l'urbanisme local."]
+declare global {
+  namespace Express {
+    interface Request {
+      authClient?: AuthenticatedClient;
+      authorizedSiteId?: string;
+    }
+  }
+}
+
+/**
+ * Strips sensitive keys (like apiKey) from site objects before responding to clients
+ */
+export function sanitizeSite(site: Site): Omit<Site, 'apiKey'> {
+  const { apiKey: _key, ...safeSite } = site;
+  return safeSite;
+}
+
+export function sanitizePartner(partner: Partner): Omit<Partner, 'apiKey'> {
+  const { apiKey: _key, ...safePartner } = partner;
+  return safePartner;
+}
+
+export interface OperatorSession {
+  id: string;
+  createdAt: number;
+  expiresAt: number;
+  role: 'admin';
+}
+
+export const activeSessions = new Map<string, OperatorSession>();
+export const SESSION_COOKIE_NAME = 'lf_operator_session';
+export const SESSION_DURATION_MS = 8 * 60 * 60 * 1000; // 8 heures de validité
+
+export function parseCookies(req: express.Request): Record<string, string> {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) return {};
+  const cookies: Record<string, string> = {};
+  const items = cookieHeader.split(';');
+  for (const item of items) {
+    const parts = item.split('=');
+    const key = parts[0]?.trim();
+    if (key) {
+      const val = parts.slice(1).join('=').trim();
+      try {
+        cookies[key] = decodeURIComponent(val);
+      } catch {
+        cookies[key] = val;
       }
     }
-  ] as Site[],
+  }
+  return cookies;
+}
 
+/**
+ * Authenticates the caller via:
+ * 1. Master admin key via header x-admin-token, x-api-key, or Authorization: Bearer <ADMIN_SECRET_KEY>
+ * 2. Active Operator Session via httpOnly session cookie or x-session-id header
+ * 3. Site API Key: x-api-key, x-leadfactory-key, or Authorization: Bearer <site.apiKey>
+ */
+export async function authenticate(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const authHeader = req.headers['authorization'];
+  let bearerKey: string | undefined;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    bearerKey = authHeader.substring(7).trim();
+  }
+
+  const providedKey = (
+    req.headers['x-api-key'] || 
+    req.headers['x-leadfactory-key'] || 
+    bearerKey
+  ) as string | undefined;
+
+  const adminToken = req.headers['x-admin-token'] as string | undefined;
+  const adminSecret = process.env.ADMIN_SECRET_KEY || 'leadfactory_master_admin_secret_2026';
+
+  // 1. Admin Master Key check (via direct API header)
+  if ((adminToken && adminToken === adminSecret) || (providedKey && providedKey === adminSecret)) {
+    req.authClient = {
+      siteId: 'all',
+      siteTitle: 'Lead Factory Master Admin',
+      theme: 'all',
+      role: 'admin'
+    };
+    req.authorizedSiteId = undefined; // Admin has universal access
+    return next();
+  }
+
+  // 2. Active Operator Session check (via httpOnly cookie or session header)
+  const cookies = parseCookies(req);
+  const sessionId = cookies[SESSION_COOKIE_NAME] || 
+                    (req.headers['x-session-id'] as string | undefined) ||
+                    (req.headers['x-operator-token'] as string | undefined);
+  if (sessionId) {
+    const session = activeSessions.get(sessionId);
+    if (session) {
+      if (Date.now() < session.expiresAt) {
+        req.authClient = {
+          siteId: 'all',
+          siteTitle: 'Lead Factory Operator',
+          theme: 'all',
+          role: 'admin'
+        };
+        req.authorizedSiteId = undefined;
+        return next();
+      } else {
+        // Expired session: invalidate
+        activeSessions.delete(sessionId);
+        return res.status(401).json({ error: "Session expirée. Veuillez vous reconnecter." });
+      }
+    }
+  }
+
+  // 3. Site API Key check
+  if (providedKey) {
+    const sites = await getSites();
+    const matchedSite = sites.find(s => s.apiKey && s.apiKey === providedKey);
+    if (matchedSite) {
+      req.authClient = {
+        siteId: matchedSite.id,
+        siteTitle: matchedSite.title,
+        theme: matchedSite.theme,
+        role: 'site'
+      };
+      req.authorizedSiteId = matchedSite.id;
+      return next();
+    }
+    // Key was provided but is invalid
+    return res.status(401).json({ error: "Clé API invalide ou non reconnue." });
+  }
+
+  // Reject unauthenticated requests
+  return res.status(401).json({ error: "Authentification requise. Veuillez vous connecter ou fournir une clé API valide via 'x-api-key', 'x-admin-token' ou 'Authorization: Bearer <key>'." });
+}
+
+/**
+ * Middleware ensuring caller has access to a specific siteId resource
+ */
+export function requireSiteScope(paramName: string = 'id') {
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (!req.authClient) {
+      return res.status(401).json({ error: "Authentification requise." });
+    }
+
+    // Admin has access to all sites
+    if (req.authClient.role === 'admin' || req.authClient.siteId === 'all') {
+      return next();
+    }
+
+    const requestedSiteId = req.params[paramName] || req.body?.siteId || req.query?.siteId;
+
+    if (requestedSiteId && requestedSiteId !== req.authClient.siteId) {
+      return res.status(403).json({ 
+        error: "Accès refusé. Vous n'avez pas l'autorisation d'accéder aux ressources de ce site.",
+        authorizedSiteId: req.authClient.siteId,
+        requestedSiteId
+      });
+    }
+
+    next();
+  };
+}
+
+
+/*
+let db: any = {
   leads: [
     {
       id: "lead-1",
@@ -357,16 +470,112 @@ let db: any = {};
 
 
 // ==========================================
+// SESSION & AUTHENTICATION ENDPOINTS
+// ==========================================
+
+// Check current operator session status
+app.get("/api/auth/session", (req, res) => {
+  const cookies = parseCookies(req);
+  const sessionId = cookies[SESSION_COOKIE_NAME] || 
+                    (req.headers['x-session-id'] as string | undefined) ||
+                    (req.headers['x-operator-token'] as string | undefined);
+
+  if (sessionId) {
+    const session = activeSessions.get(sessionId);
+    if (session) {
+      if (Date.now() < session.expiresAt) {
+        return res.json({ authenticated: true, role: session.role, expiresAt: session.expiresAt });
+      }
+      activeSessions.delete(sessionId);
+    }
+  }
+  return res.json({ authenticated: false });
+});
+
+// Operator Login (Verifies secret server-side and sets httpOnly session cookie)
+app.post("/api/auth/login", (req, res) => {
+  const { password } = req.body || {};
+  const adminSecret = process.env.ADMIN_SECRET_KEY || 'leadfactory_master_admin_secret_2026';
+
+  if (!password || typeof password !== 'string') {
+    return res.status(400).json({ error: "Mot de passe d'administration requis." });
+  }
+
+  // Verification executed strictly server-side
+  if (password !== adminSecret) {
+    return res.status(401).json({ error: "Identifiant ou mot de passe d'administration incorrect." });
+  }
+
+  // Generate a cryptographically random session ID
+  const sessionId = crypto.randomBytes(32).toString('hex');
+  const now = Date.now();
+  const expiresAt = now + SESSION_DURATION_MS;
+
+  activeSessions.set(sessionId, {
+    id: sessionId,
+    createdAt: now,
+    expiresAt,
+    role: 'admin'
+  });
+
+  const isHttps = req.secure || req.headers['x-forwarded-proto'] === 'https';
+
+  // Set secure, httpOnly session cookie with partitioned state for cross-site iframe compatibility
+  res.cookie(SESSION_COOKIE_NAME, sessionId, {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: isHttps,
+    partitioned: true,
+    maxAge: SESSION_DURATION_MS,
+    path: '/'
+  });
+
+  return res.json({
+    success: true,
+    message: "Connexion réussie.",
+    role: 'admin',
+    expiresAt
+  });
+});
+
+// Operator Logout / Session Invalidation
+app.post("/api/auth/logout", (req, res) => {
+  const cookies = parseCookies(req);
+  const sessionId = cookies[SESSION_COOKIE_NAME] || 
+                    (req.headers['x-session-id'] as string | undefined) ||
+                    (req.headers['x-operator-token'] as string | undefined);
+
+  if (sessionId) {
+    activeSessions.delete(sessionId);
+  }
+  const isHttps = req.secure || req.headers['x-forwarded-proto'] === 'https';
+  res.clearCookie(SESSION_COOKIE_NAME, {
+    path: '/',
+    httpOnly: true,
+    sameSite: 'none',
+    secure: isHttps,
+    partitioned: true
+  });
+  return res.json({ success: true, message: "Session clôturée avec succès." });
+});
+
+// ==========================================
 // API ENDPOINTS (PostgreSQL / Persistent Storage)
 // ==========================================
 
-// Get all dynamic state
-app.get("/api/data", async (req, res) => {
+// Get all dynamic state (dashboard)
+app.get("/api/data", authenticate, async (req, res) => {
   try {
-    const sites = await getSites();
-    const campaigns = await getCampaigns();
-    const leads = await getLeads();
-    const partners = await getPartners();
+    const rawSites = await getSites();
+    const sites = rawSites.map(s => sanitizeSite(s));
+    const campaigns = req.authClient?.siteId && req.authClient.siteId !== 'all'
+      ? await getCampaignsBySiteId(req.authClient.siteId)
+      : await getCampaigns();
+    const leads = req.authClient?.siteId && req.authClient.siteId !== 'all'
+      ? await getLeads(req.authClient.siteId)
+      : await getLeads();
+    const rawPartners = await getPartners();
+    const partners = rawPartners.map(p => sanitizePartner(p));
     const marketTrends = await getMarketTrends();
     const activityLogs = await getActivityLogs();
     const securityEvents = await getSecurityEvents();
@@ -387,21 +596,26 @@ app.get("/api/data", async (req, res) => {
 });
 
 // GET endpoints for individual collections
-app.get("/api/sites", async (req, res) => {
-  res.json(await getSites());
+app.get("/api/sites", authenticate, async (req, res) => {
+  const sites = await getSites();
+  if (req.authClient && req.authClient.siteId !== 'all') {
+    const filtered = sites.filter(s => s.id === req.authClient!.siteId);
+    return res.json(filtered.map(s => sanitizeSite(s)));
+  }
+  res.json(sites.map(s => sanitizeSite(s)));
 });
 
 // GET single site by ID
-app.get("/api/sites/:id", async (req, res) => {
+app.get("/api/sites/:id", authenticate, requireSiteScope('id'), async (req, res) => {
   const site = await getSiteById(req.params.id);
   if (!site) {
     return res.status(404).json({ error: "Site introuvable" });
   }
-  res.json(site);
+  res.json(sanitizeSite(site));
 });
 
 // GET dynamic Lead Factory configuration for a specific autonomous site
-app.get("/api/sites/:id/lead-factory", async (req, res) => {
+app.get("/api/sites/:id/lead-factory", authenticate, requireSiteScope('id'), async (req, res) => {
   const site = await getSiteById(req.params.id);
   if (!site) {
     return res.status(404).json({ error: "Site introuvable" });
@@ -438,7 +652,7 @@ app.get("/api/sites/:id/lead-factory", async (req, res) => {
 });
 
 // UPDATE dynamic Lead Factory configuration for a specific autonomous site
-app.put("/api/sites/:id/lead-factory", async (req, res) => {
+app.put("/api/sites/:id/lead-factory", authenticate, requireSiteScope('id'), async (req, res) => {
   const site = await getSiteById(req.params.id);
   if (!site) {
     return res.status(404).json({ error: "Site introuvable" });
@@ -482,11 +696,11 @@ app.put("/api/sites/:id/lead-factory", async (req, res) => {
     timestamp: new Date().toISOString()
   });
 
-  res.json({ success: true, site });
+  res.json({ success: true, site: sanitizeSite(site) });
 });
 
 // Update site properties
-app.put("/api/sites/:id", async (req, res) => {
+app.put("/api/sites/:id", authenticate, requireSiteScope('id'), async (req, res) => {
   const site = await getSiteById(req.params.id);
   if (!site) {
     return res.status(404).json({ error: "Site introuvable" });
@@ -495,31 +709,39 @@ app.put("/api/sites/:id", async (req, res) => {
   const updatedSite: Site = {
     ...site,
     ...req.body,
-    id: site.id
+    id: site.id,
+    apiKey: site.apiKey // Preserve existing apiKey without client overwrite
   };
 
   await saveSite(updatedSite);
-  res.json(updatedSite);
+  res.json(sanitizeSite(updatedSite));
 });
 
-app.get("/api/campaigns", async (req, res) => {
+app.get("/api/campaigns", authenticate, async (req, res) => {
+  if (req.authClient && req.authClient.siteId !== 'all') {
+    return res.json(await getCampaignsBySiteId(req.authClient.siteId));
+  }
   res.json(await getCampaigns());
 });
 
-app.get("/api/leads", async (req, res) => {
+app.get("/api/leads", authenticate, async (req, res) => {
+  if (req.authClient && req.authClient.siteId !== 'all') {
+    return res.json(await getLeads(req.authClient.siteId));
+  }
   res.json(await getLeads());
 });
 
-app.get("/api/partners", async (req, res) => {
-  res.json(await getPartners());
+app.get("/api/partners", authenticate, async (_req, res) => {
+  const partners = await getPartners();
+  res.json(partners.map(p => sanitizePartner(p)));
 });
 
-app.get("/api/activity-logs", async (req, res) => {
+app.get("/api/activity-logs", authenticate, async (_req, res) => {
   res.json(await getActivityLogs());
 });
 
 // Create active site
-app.post("/api/sites", async (req, res) => {
+app.post("/api/sites", authenticate, async (req, res) => {
   const isCILCompliant = req.body.isCILCompliant !== undefined ? req.body.isCILCompliant : true;
   const rating = isCILCompliant ? Math.floor(Math.random() * 15) + 85 : Math.floor(Math.random() * 30) + 40;
 
@@ -564,17 +786,12 @@ app.post("/api/sites", async (req, res) => {
     timestamp: new Date().toISOString()
   });
 
-  res.status(201).json(newSite);
+  res.status(201).json(sanitizeSite(newSite));
 });
 
-// Partners endpoints
-app.get("/api/partners", async (_req, res) => {
-  const partners = await getPartners();
-  res.json(partners);
-});
 
 // Create new partner
-app.post("/api/partners", async (req, res) => {
+app.post("/api/partners", authenticate, async (req, res) => {
   const plan: 'Starter' | 'Business' | 'Premium' = req.body.subscriptionPlan || "Starter";
   const maxLeads = plan === "Premium" ? 9999 : (plan === "Business" ? 25 : 10);
   const now = new Date();
@@ -601,7 +818,7 @@ app.post("/api/partners", async (req, res) => {
     revenueGenerated: req.body.revenueGenerated || 0,
     exclusiveAccess: req.body.exclusiveAccess !== undefined ? req.body.exclusiveAccess : (plan === "Premium"),
     rotationIndex: req.body.rotationIndex || 0,
-    apiKey: req.body.apiKey
+    apiKey: req.body.apiKey || "part_key_" + Math.random().toString(36).substring(2, 10)
   };
 
   await savePartner(newPartner);
@@ -613,11 +830,12 @@ app.post("/api/partners", async (req, res) => {
     timestamp: new Date().toISOString()
   });
 
-  res.status(201).json(newPartner);
+  res.status(201).json(sanitizePartner(newPartner));
 });
 
+
 // Confirm Partner Payment
-app.post("/api/partners/:id/payment", async (req, res) => {
+app.post("/api/partners/:id/payment", authenticate, async (req, res) => {
   const { id } = req.params;
   const { paymentReference, amount, extendDays } = req.body;
   const result = await confirmPartnerPayment(
@@ -633,7 +851,7 @@ app.post("/api/partners/:id/payment", async (req, res) => {
 });
 
 // Suspend Partner
-app.post("/api/partners/:id/suspend", async (req, res) => {
+app.post("/api/partners/:id/suspend", authenticate, async (req, res) => {
   const { id } = req.params;
   const { reason = "MANUAL_SUSPENSION" } = req.body;
   const result = await suspendPartner(id, reason);
@@ -644,7 +862,7 @@ app.post("/api/partners/:id/suspend", async (req, res) => {
 });
 
 // Reactivate Partner
-app.post("/api/partners/:id/reactivate", async (req, res) => {
+app.post("/api/partners/:id/reactivate", authenticate, async (req, res) => {
   const { id } = req.params;
   const result = await reactivatePartner(id);
   if (!result.success) {
@@ -654,7 +872,7 @@ app.post("/api/partners/:id/reactivate", async (req, res) => {
 });
 
 // Partner Eligibility Check
-app.get("/api/partners/:id/eligibility", async (req, res) => {
+app.get("/api/partners/:id/eligibility", authenticate, async (req, res) => {
   const { id } = req.params;
   const { sector = "solaire", city = "Bobo-Dioulasso", distributionType = "standard" } = req.query;
   const partners = await getPartners();
@@ -665,13 +883,13 @@ app.get("/api/partners/:id/eligibility", async (req, res) => {
 });
 
 // Trigger partner subscription audit
-app.post("/api/partners/check-subscriptions", async (_req, res) => {
+app.post("/api/partners/check-subscriptions", authenticate, async (_req, res) => {
   const audit = await checkPartnerSubscriptions();
   res.json({ success: true, ...audit });
 });
 
 // Update partner partial status or plan
-app.patch("/api/partners/:id", async (req, res) => {
+app.patch("/api/partners/:id", authenticate, async (req, res) => {
   const { id } = req.params;
   const updated = await updatePartner(id, req.body);
   if (!updated) {
@@ -681,7 +899,7 @@ app.patch("/api/partners/:id", async (req, res) => {
 });
 
 // Update lead status/partner
-app.put("/api/leads/:id", async (req, res) => {
+app.put("/api/leads/:id", authenticate, async (req, res) => {
   const { id } = req.params;
   const { status, assignedPartnerId } = req.body;
 
@@ -689,6 +907,15 @@ app.put("/api/leads/:id", async (req, res) => {
   const oldLead = leads.find(l => l.id === id);
   if (!oldLead) {
     return res.status(404).json({ error: "Lead not found" });
+  }
+
+  // Scope check for site credentials
+  if (req.authClient && req.authClient.siteId !== 'all' && oldLead.siteId !== req.authClient.siteId) {
+    return res.status(403).json({
+      error: "Accès refusé. Vous n'avez pas l'autorisation de modifier un lead appartenant à un autre site.",
+      authorizedSiteId: req.authClient.siteId,
+      leadSiteId: oldLead.siteId
+    });
   }
 
   const oldStatus = oldLead.status;
@@ -733,7 +960,129 @@ app.put("/api/leads/:id", async (req, res) => {
   res.json(updatedLead);
 });
 
-app.patch("/api/leads/:id", async (req, res) => {
+// Human Workflow Step Transition Endpoint
+app.post("/api/leads/:id/workflow", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const { status, note } = req.body;
+
+  const validStatuses = ['RECEIVED', 'QUALIFIED', 'HUMAN_REVIEW', 'WAITING_FOR_OFFER', 'VALIDATED', 'TRANSMITTED', 'new', 'contacted', 'sold', 'rejected'];
+  if (!status || !validStatuses.includes(status)) {
+    return res.status(400).json({ 
+      error: "Statut invalide. Statuts supportés : " + validStatuses.join(', ') 
+    });
+  }
+
+  const leads = await getLeads();
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return res.status(404).json({ error: "Lead introuvable" });
+
+  if (req.authClient && req.authClient.siteId !== 'all' && lead.siteId !== req.authClient.siteId) {
+    return res.status(403).json({ error: "Accès refusé pour ce site." });
+  }
+
+  const oldStatus = lead.status;
+  lead.status = status;
+  await saveLead(lead);
+
+  await addActivityLog({
+    id: "log-" + Date.now(),
+    type: "system",
+    message: `[WORKFLOW COMMERCIAL] Lead ${lead.name} (${lead.id}) passé de '${oldStatus}' à '${status}' par l'opérateur.${note ? ` Note: ${note}` : ''}`,
+    timestamp: new Date().toISOString()
+  });
+
+  res.json({ success: true, lead });
+});
+
+// Suggest Eligible Partner on demand for operator human review (No auto-assignment or dispatch)
+app.get("/api/leads/:id/suggest-partner", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const leads = await getLeads();
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return res.status(404).json({ error: "Lead introuvable" });
+
+  const sites = await getSites();
+  const site = sites.find(s => s.id === lead.siteId);
+  const leadSector = site?.theme || "solaire";
+  const distType = (lead.score >= 80 ? "exclusive" : "standard");
+  const suggested = await findBestEligiblePartner(leadSector, lead.city, distType);
+
+  res.json({
+    suggestedPartner: suggested ? {
+      id: suggested.id,
+      name: suggested.name,
+      email: suggested.email,
+      phone: suggested.phone,
+      sector: suggested.sector,
+      city: suggested.city,
+      leadsReceived: suggested.leadsReceived,
+      subscriptionPlan: suggested.subscriptionPlan
+    } : null
+  });
+});
+
+// Explicit Operator Partner Transmission Endpoint (Only executable upon human validation)
+app.post("/api/leads/:id/transmit", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const { partnerId } = req.body;
+
+  const leads = await getLeads();
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return res.status(404).json({ error: "Lead introuvable" });
+
+  // Scope check
+  if (req.authClient && req.authClient.siteId !== 'all' && lead.siteId !== req.authClient.siteId) {
+    return res.status(403).json({ error: "Accès refusé pour ce site." });
+  }
+
+  let targetPartnerId = partnerId;
+  if (!targetPartnerId) {
+    const sites = await getSites();
+    const site = sites.find(s => s.id === lead.siteId);
+    const leadSector = site?.theme || "solaire";
+    const distType = (lead.score >= 80 ? "exclusive" : "standard");
+    const best = await findBestEligiblePartner(leadSector, lead.city, distType);
+    if (!best) {
+      return res.status(400).json({ error: "Aucun partenaire éligible disponible pour ce secteur et cette localité." });
+    }
+    targetPartnerId = best.id;
+  }
+
+  const partners = await getPartners();
+  const partner = partners.find(p => p.id === targetPartnerId);
+  if (!partner) {
+    return res.status(404).json({ error: "Partenaire introuvable" });
+  }
+
+  // Atomic partner assignment
+  const assignResult = await assignLeadToPartner(lead.id, partner.id, "CONTRÔLE_HUMAIN_VALIDÉ");
+  if (!assignResult.success) {
+    return res.status(500).json({ error: assignResult.error || "Échec d'attribution" });
+  }
+
+  const updatedLead = assignResult.lead!;
+  updatedLead.status = "TRANSMITTED";
+  await saveLead(updatedLead);
+
+  // Send partner email notification explicitly after operator validation
+  await sendPartnerLeadEmail(partner, updatedLead);
+
+  await addActivityLog({
+    id: "log-" + Date.now(),
+    type: "partner_matched",
+    message: `[CONTRÔLE HUMAIN VALIDÉ] Transmission manuelle du prospect ${updatedLead.name} validée vers ${partner.name} (${partner.email}).`,
+    timestamp: new Date().toISOString()
+  });
+
+  res.json({
+    success: true,
+    message: `Prospect validé et transmis au partenaire ${partner.name}.`,
+    lead: updatedLead,
+    partner
+  });
+});
+
+app.patch("/api/leads/:id", authenticate, async (req, res) => {
   const { id } = req.params;
   const { status, assignedPartnerId } = req.body;
   
@@ -741,6 +1090,15 @@ app.patch("/api/leads/:id", async (req, res) => {
   const oldLead = leads.find(l => l.id === id);
   if (!oldLead) {
     return res.status(404).json({ error: "Lead not found" });
+  }
+
+  // Scope check for site credentials
+  if (req.authClient && req.authClient.siteId !== 'all' && oldLead.siteId !== req.authClient.siteId) {
+    return res.status(403).json({
+      error: "Accès refusé. Vous n'avez pas l'autorisation de modifier un lead appartenant à un autre site.",
+      authorizedSiteId: req.authClient.siteId,
+      leadSiteId: oldLead.siteId
+    });
   }
 
   const updatedLead: Lead = {
@@ -754,7 +1112,7 @@ app.patch("/api/leads/:id", async (req, res) => {
 });
 
 // Delete or modify site
-app.delete("/api/sites/:id", async (req, res) => {
+app.delete("/api/sites/:id", authenticate, requireSiteScope('id'), async (req, res) => {
   const { id } = req.params;
   const sites = await getSites();
   const siteExists = sites.some(s => s.id === id);
@@ -773,6 +1131,7 @@ app.delete("/api/sites/:id", async (req, res) => {
   }
   res.status(404).json({ error: "Site non trouvé." });
 });
+
 
 
 // ==========================================
@@ -1184,23 +1543,15 @@ Renvoie les informations suivantes en JSON:
   const computedScore = isFlaggedAnomaly ? 25 : (aiResult?.leadScore || (rawMessage.length > 100 ? 85 : 65));
   const distType = computedScore >= 80 ? "exclusive" : "standard";
 
-  // Eligible Partner Lookup
-  const matchedPartner = isFlaggedAnomaly ? null : await findBestEligiblePartner(leadSector, leadCity, distType);
-  let assignedId = existingLead?.assignedPartnerId || null;
+  // MANDATORY BUSINESS RULE:
+  // Strictly NO automatic partner lookup, assignment, or notification on ingestion.
+  // The lead sequence MUST follow:
+  // REÇU -> QUALIFICATION -> CONTRÔLE HUMAIN -> EN ATTENTE D'UNE OFFRE -> VALIDATION -> TRANSMISSION PARTENAIRE
+  const matchedPartner = null;
+  const assignedId = existingLead?.assignedPartnerId || null;
 
-  if (matchedPartner && !assignedId) {
-    assignedId = matchedPartner.id;
-    matchedPartner.leadsReceived += 1;
-    matchedPartner.lastAssignedAt = new Date().toISOString();
-    matchedPartner.rotationIndex = (matchedPartner.rotationIndex || 0) + 1;
-    await savePartner(matchedPartner);
-  }
-
-  // Lead Status & Notification
-  let leadStatus: Lead['status'] = existingLead ? existingLead.status : (matchedPartner ? "contacted" : "WAITING_FOR_PARTNER" as any);
-  if (isFlaggedAnomaly) {
-    leadStatus = "new";
-  }
+  // Initial state for new lead: strictly "RECEIVED"
+  const leadStatus: Lead['status'] = existingLead ? existingLead.status : "RECEIVED";
 
   const fullLead: Lead = {
     id: leadId,
@@ -1236,38 +1587,22 @@ Renvoie les informations suivantes en JSON:
     distributionType: distType,
     distributionChannels: {
       email: {
-        sent: matchedPartner ? true : false,
-        sentAt: matchedPartner ? new Date().toISOString() : null,
-        recipient: matchedPartner ? matchedPartner.email : ""
+        sent: false,
+        sentAt: null,
+        recipient: ""
       },
       whatsapp: {
-        sent: matchedPartner ? true : false,
-        sentAt: matchedPartner ? new Date().toISOString() : null,
-        formattedMessage: `LeadFactory : Nouveau prospect ${name} (${phone}) disponible pour ${site.title}.`
+        sent: false,
+        sentAt: null,
+        formattedMessage: ""
       },
       telegram: {
-        sent: matchedPartner ? true : false,
-        sentAt: matchedPartner ? new Date().toISOString() : null,
-        botCommandTriggered: `/prospect ${leadId}`
+        sent: false,
+        sentAt: null,
+        botCommandTriggered: ""
       }
     }
   };
-
-  // Dispatch email notification to matched partner
-  if (matchedPartner) {
-    const emailResult = await sendPartnerLeadEmail(matchedPartner, fullLead);
-    if (!emailResult.success) {
-      fullLead.distributionChannels.email.sent = false;
-      fullLead.distributionChannels.email.sentAt = null;
-    }
-  } else if (!isFlaggedAnomaly) {
-    await addActivityLog({
-      id: "log-" + Date.now(),
-      type: "partner_matched",
-      message: `[EN ATTENTE PARTENAIRE] Prospect ${name} (${leadSector} / ${leadCity}) enregistré en file d'attente car aucun partenaire éligible n'est actuellement disponible.`,
-      timestamp: new Date().toISOString()
-    });
-  }
 
   await saveLead(fullLead);
 
@@ -1282,8 +1617,8 @@ Renvoie les informations suivantes en JSON:
     message: isFlaggedAnomaly
       ? `[ALERTE SÉCURITÉ] Prospect suspect '${name}' bloqué/flaggué par le Guardian AI.`
       : (isExistingProspect
-        ? `[Mémoire Prospect] Ré-engagement de ${name} pour ${site.title} (${formType}) - Nouveau Score : ${fullLead.score}/100`
-        : `Nouveau prospect qualifié par l'IA : ${name} (${site.title}) - Score : ${fullLead.score}/100`),
+        ? `[Mémoire Prospect] Ré-engagement de ${name} pour ${site.title} (${formType}) - Statut : ${leadStatus} (Score : ${fullLead.score}/100)`
+        : `[NOUVEAU LEAD REÇU] Prospect ${name} (${site.title}) enregistré avec succès (Statut: REÇU, Score: ${fullLead.score}/100). En attente de contrôle humain avant transmission.`),
     timestamp: new Date().toISOString()
   });
 
@@ -1291,7 +1626,7 @@ Renvoie les informations suivantes en JSON:
     success: true,
     lead: fullLead,
     isExistingProspect,
-    matchedPartner
+    matchedPartner: null
   };
 }
 
@@ -1343,10 +1678,10 @@ const ingestLeadHandler = async (req: express.Request, res: express.Response) =>
 
   res.json({
     success: true,
-    message: result.isExistingProspect ? "Ré-engagement prospect enregistré avec succès." : "Prospect ingéré et qualifié avec succès.",
+    message: result.isExistingProspect ? "Ré-engagement prospect enregistré avec succès." : "Prospect reçu et enregistré sous statut REÇU. En attente de contrôle humain.",
     isExistingProspect: result.isExistingProspect,
     lead: result.lead,
-    matchedPartner: result.matchedPartner ? { id: result.matchedPartner.id, name: result.matchedPartner.name } : null
+    matchedPartner: null
   });
 };
 
@@ -1386,7 +1721,7 @@ app.get("/api/sites/:siteId/branded-config", async (req, res) => {
 });
 
 // 3D. Campaign Intelligence & Analytics Endpoints
-app.get("/api/campaigns/analytics", async (req, res) => {
+app.get("/api/campaigns/analytics", authenticate, async (req, res) => {
   const campaigns = await getCampaigns();
   const allLeads = await getLeads();
   const partners = await getPartners();
@@ -1431,7 +1766,7 @@ app.get("/api/campaigns/analytics", async (req, res) => {
   });
 });
 
-app.get("/api/campaigns/:id/analytics", async (req, res) => {
+app.get("/api/campaigns/:id/analytics", authenticate, async (req, res) => {
   const campaigns = await getCampaigns();
   const campaign = campaigns.find(c => c.id === req.params.id);
   if (!campaign) return res.status(404).json({ error: "Campagne introuvable." });
@@ -1501,17 +1836,16 @@ app.get("/api/campaigns/:id/analytics", async (req, res) => {
 });
 
 // 3E. Site Isolation Endpoints
-app.get("/api/sites/:siteId/leads", async (req, res) => {
-  const allLeads = await getLeads();
-  const siteLeads = allLeads.filter(l => l.siteId === req.params.siteId);
+app.get("/api/sites/:siteId/leads", authenticate, requireSiteScope('siteId'), async (req, res) => {
+  const siteLeads = await getLeads(req.params.siteId);
   res.json(siteLeads);
 });
 
-app.get("/api/sites/:siteId/campaigns", async (req, res) => {
-  const allCampaigns = await getCampaigns();
-  const siteCampaigns = allCampaigns.filter(c => c.siteId === req.params.siteId);
+app.get("/api/sites/:siteId/campaigns", authenticate, requireSiteScope('siteId'), async (req, res) => {
+  const siteCampaigns = await getCampaignsBySiteId(req.params.siteId);
   res.json(siteCampaigns);
 });
+
 
 // Endpoint for Campaign Compliance Audits
 app.post("/api/compliance/audit-campaign", async (req, res) => {
@@ -1571,7 +1905,7 @@ Renvoie :
 });
 
 // Endpoint for Backup triggering
-app.post("/api/security/backup", async (req, res) => {
+app.post("/api/security/backup", authenticate, async (req, res) => {
   const backupId = "bkp-" + Date.now();
   const timestamp = new Date().toISOString();
   

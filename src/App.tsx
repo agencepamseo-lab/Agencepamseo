@@ -30,6 +30,85 @@ export default function App() {
     securityEvents: []
   });
   const [isDbLoading, setIsDbLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Check operator session status on mount
+  const checkSession = async () => {
+    setIsDbLoading(true);
+    try {
+      const response = await fetch('/api/auth/session', {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.authenticated) {
+          setIsAuthenticated(true);
+          await fetchDbState();
+          return;
+        }
+      }
+    } catch (err) {
+      console.error('Session check failed:', err);
+    }
+    setIsAuthenticated(false);
+    setIsDbLoading(false);
+  };
+
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  // Handle operator login via secure server session
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginPassword.trim()) return;
+    setIsLoggingIn(true);
+    setLoginError('');
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: loginPassword })
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setLoginPassword('');
+        setIsAuthenticated(true);
+        await fetchDbState();
+      } else {
+        setLoginError(data.error || "Mot de passe incorrect ou non autorisé.");
+      }
+    } catch (err) {
+      setLoginError("Erreur réseau lors de la connexion.");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  // Handle operator logout / session invalidation
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+    setIsAuthenticated(false);
+    setDbState({
+      sites: [],
+      leads: [],
+      partners: [],
+      marketTrends: [],
+      activityLogs: [],
+      securityEvents: []
+    });
+  };
 
   // Prefill state for Site Generator tab
   const [prefilledSector, setPrefilledSector] = useState('');
@@ -42,7 +121,13 @@ export default function App() {
   const fetchDbState = async () => {
     setIsDbLoading(true);
     try {
-      const response = await fetch('/api/data');
+      const response = await fetch('/api/data', {
+        credentials: 'include'
+      });
+      if (response.status === 401) {
+        setIsAuthenticated(false);
+        return;
+      }
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
       }
@@ -64,15 +149,14 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    fetchDbState();
-  }, []);
-
   // Reset data to perfect Burkinabè seed state
   const handleResetData = async () => {
     if (!window.confirm("Voulez-vous réinitialiser toutes les données aux valeurs de démonstration ?")) return;
     try {
-      const response = await fetch('/api/data/reset', { method: 'POST' });
+      const response = await fetch('/api/data/reset', { 
+        method: 'POST',
+        credentials: 'include'
+      });
       const data = await response.json();
       if (data.success) {
         setDbState(data.state);
@@ -120,6 +204,7 @@ export default function App() {
     try {
       const response = await fetch('/api/partners', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPartnerData)
       });
@@ -147,13 +232,16 @@ export default function App() {
     try {
       const response = await fetch(`/api/leads/${leadId}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
       });
       const updatedLead = await response.json();
       
       // Update local state by calling server state to sync revenue calculations
-      const freshRes = await fetch('/api/data');
+      const freshRes = await fetch('/api/data', {
+        credentials: 'include'
+      });
       const freshData = await freshRes.json();
       setDbState(freshData);
     } catch (error) {
@@ -171,7 +259,10 @@ export default function App() {
   const handleDeleteSite = async (siteId: string) => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce microsite d'acquisition ?")) return;
     try {
-      const response = await fetch(`/api/sites/${siteId}`, { method: 'DELETE' });
+      const response = await fetch(`/api/sites/${siteId}`, { 
+        method: 'DELETE',
+        credentials: 'include'
+      });
       if (response.ok) {
         setDbState(prev => ({
           ...prev,
@@ -187,7 +278,10 @@ export default function App() {
   // Trigger encrypted backup for security guardian
   const handleTriggerBackup = async () => {
     try {
-      const response = await fetch('/api/security/backup', { method: 'POST' });
+      const response = await fetch('/api/security/backup', { 
+        method: 'POST',
+        credentials: 'include'
+      });
       const data = await response.json();
       if (data.success) {
         await fetchDbState();
@@ -207,6 +301,86 @@ export default function App() {
   };
 
   const totalRevenues = (dbState.partners || []).reduce((sum, p) => sum + (p.revenueGenerated || 0), 0);
+
+  // 1. Session verification in progress
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center">
+        <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
+        <p className="text-xs text-slate-400 mt-3 font-medium">Vérification de la session en cours...</p>
+      </div>
+    );
+  }
+
+  // 2. Unauthenticated Operator Login Screen
+  if (isAuthenticated === false) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 py-12 selection:bg-indigo-500 selection:text-white">
+        <div className="w-full max-w-md bg-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-800">
+          <div className="flex flex-col items-center text-center mb-8">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4 shadow-lg shadow-indigo-600/10">
+              <Lock className="w-7 h-7" />
+            </div>
+            <h1 className="text-xl font-display font-extrabold text-white tracking-tight">
+              LeadFactory <span className="text-indigo-400">Africa AI</span>
+            </h1>
+            <p className="text-xs text-slate-400 mt-2">
+              Console d'administration sécurisée • Accès restreint
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
+                Clé / Mot de passe d'administration
+              </label>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="Entrez votre mot de passe administrateur"
+                disabled={isLoggingIn}
+                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm font-medium text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                autoFocus
+              />
+            </div>
+
+            {loginError && (
+              <div className="p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl text-xs font-semibold text-rose-300">
+                {loginError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isLoggingIn || !loginPassword.trim()}
+              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed shadow-lg shadow-indigo-600/25"
+            >
+              {isLoggingIn ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Vérification sécurisée...</span>
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Ouvrir la session d'administration</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-8 pt-6 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+              Session chiffrée HttpOnly
+            </span>
+            <span>Bobo-Dioulasso, BF</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
@@ -288,15 +462,26 @@ export default function App() {
           </select>
         </div>
 
-        {/* Reset button tool */}
-        <button 
-          onClick={handleResetData}
-          className="bg-slate-100 hover:bg-slate-200 text-slate-600 p-2.5 rounded-xl border border-slate-200/60 transition flex items-center gap-1 text-xs font-semibold cursor-pointer shrink-0"
-          title="Réinitialiser les données de démo"
-        >
-          <RefreshCw className="w-4 h-4" />
-          <span className="hidden md:inline">Démo Reset</span>
-        </button>
+        {/* Action buttons: Reset & Logout */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button 
+            onClick={handleResetData}
+            className="bg-slate-100 hover:bg-slate-200 text-slate-600 p-2.5 rounded-xl border border-slate-200/60 transition flex items-center gap-1 text-xs font-semibold cursor-pointer shrink-0"
+            title="Réinitialiser les données de démo"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span className="hidden md:inline">Démo Reset</span>
+          </button>
+
+          <button 
+            onClick={handleLogout}
+            className="bg-slate-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-slate-600 p-2.5 rounded-xl border border-slate-200/60 transition flex items-center gap-1 text-xs font-semibold cursor-pointer shrink-0"
+            title="Clôturer la session opérateur"
+          >
+            <Lock className="w-4 h-4" />
+            <span className="hidden md:inline">Déconnexion</span>
+          </button>
+        </div>
 
       </header>
 
@@ -483,6 +668,7 @@ export default function App() {
                   partners={dbState.partners} 
                   activityLogs={dbState.activityLogs}
                   onUpdateLead={handleUpdateLead} 
+                  onRefreshData={fetchDbState}
                 />
               )}
 

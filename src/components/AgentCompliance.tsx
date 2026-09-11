@@ -45,6 +45,7 @@ export default function AgentCompliance({ sitesCount, compliantSitesCount }: Age
     try {
       const response = await fetch('/api/compliance/audit-campaign', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: campaignTitle || "Campagne d'acquisition",

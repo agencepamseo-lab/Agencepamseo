@@ -45,7 +45,9 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
   // Fetch campaigns
   const fetchCampaigns = async () => {
     try {
-      const res = await fetch('/api/campaigns');
+      const res = await fetch('/api/campaigns', {
+        credentials: 'include'
+      });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
       if (Array.isArray(data)) {
@@ -72,7 +74,9 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
     const fetchAnalytics = async () => {
       setIsLoadingAnalytics(true);
       try {
-        const res = await fetch(`/api/campaigns/${selectedCampaignId}/analytics`);
+        const res = await fetch(`/api/campaigns/${selectedCampaignId}/analytics`, {
+          credentials: 'include'
+        });
         const data = await res.json();
         setCampaignAnalytics(data);
       } catch (err) {
@@ -89,7 +93,9 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
     if (!selectedBrandedSiteId) return;
     const fetchBrandedConfig = async () => {
       try {
-        const res = await fetch(`/api/sites/${selectedBrandedSiteId}/branded-config`);
+        const res = await fetch(`/api/sites/${selectedBrandedSiteId}/branded-config`, {
+          credentials: 'include'
+        });
         const data = await res.json();
         setBrandedConfig(data);
       } catch (err) {

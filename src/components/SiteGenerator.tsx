@@ -52,6 +52,7 @@ export default function SiteGenerator({ onSiteCreated, prefilledSector, prefille
     try {
       const response = await fetch('/api/generate-site-content', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           theme,
@@ -74,6 +75,7 @@ export default function SiteGenerator({ onSiteCreated, prefilledSector, prefille
     try {
       const response = await fetch('/api/sites', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...draftSite,
