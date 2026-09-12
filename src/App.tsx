@@ -14,7 +14,7 @@ import {
   Building2, Sparkles, Database, RefreshCw, Layers, TrendingUp, 
   MapPin, HelpCircle, Laptop, Landmark, Smartphone, Play, 
   Trash2, Globe, Bot, ChevronRight, CheckCircle2, Award, Plus,
-  ShieldCheck, Lock, Target, Sliders
+  ShieldCheck, Lock, Target, Sliders, Eye, EyeOff, ExternalLink
 } from 'lucide-react';
 
 export default function App() {
@@ -34,6 +34,7 @@ export default function App() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Check operator session status on mount
   const checkSession = async () => {
@@ -64,7 +65,8 @@ export default function App() {
   // Handle operator login via secure server session
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginPassword.trim()) return;
+    const cleanPassword = loginPassword.trim();
+    if (!cleanPassword) return;
     setIsLoggingIn(true);
     setLoginError('');
     try {
@@ -72,13 +74,17 @@ export default function App() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: loginPassword })
+        body: JSON.stringify({ password: cleanPassword })
       });
       const data = await response.json();
       if (response.ok && data.success) {
         setLoginPassword('');
         setIsAuthenticated(true);
-        await fetchDbState();
+        const loadOk = await fetchDbState();
+        if (loadOk === false) {
+          setIsAuthenticated(false);
+          setLoginError("Authentification réussie, mais les cookies de session sont bloqués par le navigateur dans cette iframe. Ouvrez l'application dans un nouvel onglet.");
+        }
       } else {
         setLoginError(data.error || "Mot de passe incorrect ou non autorisé.");
       }
@@ -118,7 +124,7 @@ export default function App() {
   const [previewSite, setPreviewSite] = useState<Site | null>(null);
 
   // Fetch initial state from the Express Server
-  const fetchDbState = async () => {
+  const fetchDbState = async (): Promise<boolean> => {
     setIsDbLoading(true);
     try {
       const response = await fetch('/api/data', {
@@ -126,7 +132,7 @@ export default function App() {
       });
       if (response.status === 401) {
         setIsAuthenticated(false);
-        return;
+        return false;
       }
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
@@ -142,8 +148,10 @@ export default function App() {
           securityEvents: Array.isArray(data.securityEvents) ? data.securityEvents : []
         });
       }
+      return true;
     } catch (error) {
       console.error('Failed to fetch DB state:', error);
+      return false;
     } finally {
       setIsDbLoading(false);
     }
@@ -334,20 +342,41 @@ export default function App() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
                 Clé / Mot de passe d'administration
               </label>
-              <input
-                type="password"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                placeholder="Entrez votre mot de passe administrateur"
-                disabled={isLoggingIn}
-                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm font-medium text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                autoFocus
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="Entrez votre mot de passe administrateur"
+                  disabled={isLoggingIn}
+                  className="w-full pl-4 pr-11 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm font-medium text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 p-1 cursor-pointer"
+                  title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             {loginError && (
-              <div className="p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl text-xs font-semibold text-rose-300">
-                {loginError}
+              <div className="p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl text-xs font-semibold text-rose-300 space-y-2">
+                <p>{loginError}</p>
+                {loginError.includes("iframe") && (
+                  <a
+                    href={typeof window !== 'undefined' ? window.location.href : '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full mt-2 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition no-underline shadow-md shadow-indigo-600/30 text-center"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Ouvrir dans un nouvel onglet pour vous connecter</span>
+                  </a>
+                )}
               </div>
             )}
 

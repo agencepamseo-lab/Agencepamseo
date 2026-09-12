@@ -494,10 +494,11 @@ app.get("/api/auth/session", (req, res) => {
 
 // Operator Login (Verifies secret server-side and sets httpOnly session cookie)
 app.post("/api/auth/login", (req, res) => {
-  const { password } = req.body || {};
-  const adminSecret = process.env.ADMIN_SECRET_KEY || 'leadfactory_master_admin_secret_2026';
+  const rawPassword = req.body?.password;
+  const password = typeof rawPassword === 'string' ? rawPassword.trim() : '';
+  const adminSecret = (process.env.ADMIN_SECRET_KEY || 'leadfactory_master_admin_secret_2026').trim();
 
-  if (!password || typeof password !== 'string') {
+  if (!password) {
     return res.status(400).json({ error: "Mot de passe d'administration requis." });
   }
 
