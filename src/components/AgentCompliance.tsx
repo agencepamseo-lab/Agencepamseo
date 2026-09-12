@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiFetch } from '../api';
 import { 
   ShieldCheck, AlertTriangle, FileCheck2, Library, CheckCircle2, 
   HelpCircle, RefreshCw, Send, Lock, Eye, Check, AlertOctagon 
@@ -43,9 +44,8 @@ export default function AgentCompliance({ sitesCount, compliantSitesCount }: Age
     setAuditResult(null);
 
     try {
-      const response = await fetch('/api/compliance/audit-campaign', {
+      const response = await apiFetch('/api/compliance/audit-campaign', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: campaignTitle || "Campagne d'acquisition",

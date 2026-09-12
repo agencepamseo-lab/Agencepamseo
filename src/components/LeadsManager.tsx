@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lead, Partner, ActivityLog, LeadWorkflowStep } from '../types';
+import { apiFetch } from '../api';
 import { 
   Users, TrendingUp, CheckCircle, Clock, Copy, Search, Filter, 
   MapPin, ShieldAlert, Award, FileText, ChevronRight, Check, AlertCircle,
@@ -121,9 +122,8 @@ export default function LeadsManager({
     setTransmissionSuccessMessage(null);
 
     try {
-      const res = await fetch(`/api/leads/${selectedLead.id}/workflow`, {
+      const res = await apiFetch(`/api/leads/${selectedLead.id}/workflow`, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: targetStep })
       });
@@ -145,9 +145,7 @@ export default function LeadsManager({
     setIsSuggesting(true);
     setWorkflowError(null);
     try {
-      const res = await fetch(`/api/leads/${selectedLead.id}/suggest-partner`, {
-        credentials: 'include'
-      });
+      const res = await apiFetch(`/api/leads/${selectedLead.id}/suggest-partner`);
       if (res.ok) {
         const data = await res.json();
         if (data.suggestedPartner) {
@@ -172,9 +170,8 @@ export default function LeadsManager({
     setTransmissionSuccessMessage(null);
 
     try {
-      const res = await fetch(`/api/leads/${selectedLead.id}/transmit`, {
+      const res = await apiFetch(`/api/leads/${selectedLead.id}/transmit`, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ partnerId: selectedPartnerIdForTransmit || undefined })
       });

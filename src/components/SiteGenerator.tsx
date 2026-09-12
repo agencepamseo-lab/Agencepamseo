@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Site } from '../types';
+import { apiFetch } from '../api';
 import { 
   Sparkles, Loader2, Play, Globe, Check, Edit3, 
   HelpCircle, Settings, Plus, LayoutGrid, Info
@@ -50,9 +51,8 @@ export default function SiteGenerator({ onSiteCreated, prefilledSector, prefille
     setDraftSite(null);
 
     try {
-      const response = await fetch('/api/generate-site-content', {
+      const response = await apiFetch('/api/generate-site-content', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           theme,
@@ -73,9 +73,8 @@ export default function SiteGenerator({ onSiteCreated, prefilledSector, prefille
     if (!draftSite) return;
 
     try {
-      const response = await fetch('/api/sites', {
+      const response = await apiFetch('/api/sites', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...draftSite,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Site, Lead, Partner, CampaignData, CampaignAnalytics, BrandedFormConfig } from '../types';
+import { apiFetch } from '../api';
 import { 
   BarChart3, Sparkles, Send, Copy, CheckCircle2, AlertTriangle, 
   Layers, ExternalLink, RefreshCw, UserCheck, ShieldCheck, 
@@ -45,9 +46,7 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
   // Fetch campaigns
   const fetchCampaigns = async () => {
     try {
-      const res = await fetch('/api/campaigns', {
-        credentials: 'include'
-      });
+      const res = await apiFetch('/api/campaigns');
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
       if (Array.isArray(data)) {
@@ -74,9 +73,7 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
     const fetchAnalytics = async () => {
       setIsLoadingAnalytics(true);
       try {
-        const res = await fetch(`/api/campaigns/${selectedCampaignId}/analytics`, {
-          credentials: 'include'
-        });
+        const res = await apiFetch(`/api/campaigns/${selectedCampaignId}/analytics`);
         const data = await res.json();
         setCampaignAnalytics(data);
       } catch (err) {
@@ -93,9 +90,7 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
     if (!selectedBrandedSiteId) return;
     const fetchBrandedConfig = async () => {
       try {
-        const res = await fetch(`/api/sites/${selectedBrandedSiteId}/branded-config`, {
-          credentials: 'include'
-        });
+        const res = await apiFetch(`/api/sites/${selectedBrandedSiteId}/branded-config`);
         const data = await res.json();
         setBrandedConfig(data);
       } catch (err) {

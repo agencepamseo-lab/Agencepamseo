@@ -58,6 +58,7 @@ if (apiKey) {
 }
 
 const app = express();
+app.enable('trust proxy');
 app.use(express.json());
 
 // Dynamic CORS & Credentials configuration for dashboard and iframe contexts
@@ -67,7 +68,8 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token, x-api-key, x-leadfactory-key, x-session-id, x-operator-token');
+    const reqHeaders = req.headers['access-control-request-headers'];
+    res.setHeader('Access-Control-Allow-Headers', reqHeaders || 'Content-Type, Authorization, x-admin-token, x-api-key, x-leadfactory-key, x-session-id, x-operator-token');
   }
   if (req.method === 'OPTIONS') {
     return res.sendStatus(204);
@@ -519,7 +521,10 @@ app.post("/api/auth/login", (req, res) => {
     role: 'admin'
   });
 
-  const isHttps = req.secure || req.headers['x-forwarded-proto'] === 'https';
+  const isHttps = req.secure || 
+                  req.headers['x-forwarded-proto'] === 'https' || 
+                  process.env.NODE_ENV === 'production' || 
+                  (req.headers.host ? !req.headers.host.includes('localhost') : false);
 
   // Set secure, httpOnly session cookie with partitioned state for cross-site iframe compatibility
   res.cookie(SESSION_COOKIE_NAME, sessionId, {
@@ -535,6 +540,8 @@ app.post("/api/auth/login", (req, res) => {
     success: true,
     message: "Connexion réussie.",
     role: 'admin',
+    sessionId,
+    token: sessionId,
     expiresAt
   });
 });
@@ -549,7 +556,10 @@ app.post("/api/auth/logout", (req, res) => {
   if (sessionId) {
     activeSessions.delete(sessionId);
   }
-  const isHttps = req.secure || req.headers['x-forwarded-proto'] === 'https';
+  const isHttps = req.secure || 
+                  req.headers['x-forwarded-proto'] === 'https' || 
+                  process.env.NODE_ENV === 'production' || 
+                  (req.headers.host ? !req.headers.host.includes('localhost') : false);
   res.clearCookie(SESSION_COOKIE_NAME, {
     path: '/',
     httpOnly: true,

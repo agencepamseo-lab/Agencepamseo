@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MarketTrend } from '../types';
+import { apiFetch } from '../api';
 import { 
   TrendingUp, Globe, Search, ArrowRight, Sparkles, 
   Loader2, Lightbulb, MapPin, Target, BarChart2
@@ -26,9 +27,8 @@ export default function MarketResearch({ trends = [], onTriggerSiteGeneration }:
     setAnalysisResult(null);
 
     try {
-      const response = await fetch('/api/market-analysis', {
+      const response = await apiFetch('/api/market-analysis', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ city, sector })
       });

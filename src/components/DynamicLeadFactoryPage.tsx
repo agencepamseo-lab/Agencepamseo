@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Site, Lead, QualificationQuestion, CampaignData } from '../types';
+import { apiFetch } from '../api';
 import { 
   Sparkles, CheckCircle2, ShieldCheck, ArrowRight, Bot, 
   Send, Loader2, Settings, Plus, Trash2, Edit3, Globe, 
@@ -81,7 +82,7 @@ export default function DynamicLeadFactoryPage({
       setAnswers({});
 
       // Fetch site campaigns
-      fetch(`/api/sites/${site.id}/lead-factory`)
+      apiFetch(`/api/sites/${site.id}/lead-factory`)
         .then(res => res.json())
         .then(data => {
           if (data.campaigns) {
@@ -131,7 +132,7 @@ export default function DynamicLeadFactoryPage({
     const fullRawMessage = `${formattedAnswers}${additionalNotes ? ` | Note client: ${additionalNotes}` : ''}`;
 
     try {
-      const response = await fetch('/api/leads/ingest', {
+      const response = await apiFetch('/api/leads/ingest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -176,7 +177,7 @@ export default function DynamicLeadFactoryPage({
     setConfigSuccessMessage(null);
 
     try {
-      const response = await fetch(`/api/sites/${activeSite.id}/lead-factory`, {
+      const response = await apiFetch(`/api/sites/${activeSite.id}/lead-factory`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

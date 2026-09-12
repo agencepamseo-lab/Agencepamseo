@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DBState, Site, Lead, Partner, ActivityLog, SecurityEvent } from './types';
+import { apiFetch, setStoredSessionToken } from './api';
 import MarketResearch from './components/MarketResearch';
 import SiteGenerator from './components/SiteGenerator';
 import LeadsManager from './components/LeadsManager';
@@ -40,9 +41,7 @@ export default function App() {
   const checkSession = async () => {
     setIsDbLoading(true);
     try {
-      const response = await fetch('/api/auth/session', {
-        credentials: 'include'
-      });
+      const response = await apiFetch('/api/auth/session');
       if (response.ok) {
         const data = await response.json();
         if (data.authenticated) {
@@ -54,6 +53,7 @@ export default function App() {
     } catch (err) {
       console.error('Session check failed:', err);
     }
+    setStoredSessionToken(null);
     setIsAuthenticated(false);
     setIsDbLoading(false);
   };
@@ -70,26 +70,39 @@ export default function App() {
     setIsLoggingIn(true);
     setLoginError('');
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await apiFetch('/api/auth/login', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: cleanPassword })
       });
-      const data = await response.json();
-      if (response.ok && data.success) {
+      
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        if (!response.ok) {
+          throw new Error(`Le serveur d'application répond avec le statut ${response.status}. Veuillez patienter un instant et réessayer.`);
+        }
+      }
+
+      if (response.ok && data?.success) {
+        const token = data.token || data.sessionId;
+        if (token) {
+          setStoredSessionToken(token);
+        }
         setLoginPassword('');
         setIsAuthenticated(true);
         const loadOk = await fetchDbState();
         if (loadOk === false) {
           setIsAuthenticated(false);
-          setLoginError("Authentification réussie, mais les cookies de session sont bloqués par le navigateur dans cette iframe. Ouvrez l'application dans un nouvel onglet.");
+          setLoginError("Authentification réussie, mais impossible de charger les données du serveur.");
         }
       } else {
-        setLoginError(data.error || "Mot de passe incorrect ou non autorisé.");
+        setLoginError(data?.error || "Mot de passe incorrect ou non autorisé.");
       }
-    } catch (err) {
-      setLoginError("Erreur réseau lors de la connexion.");
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setLoginError(err?.message || "Erreur réseau lors de la connexion. Vérifiez que le serveur est accessible et réessayez.");
     } finally {
       setIsLoggingIn(false);
     }
@@ -98,13 +111,13 @@ export default function App() {
   // Handle operator logout / session invalidation
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { 
-        method: 'POST',
-        credentials: 'include'
+      await apiFetch('/api/auth/logout', { 
+        method: 'POST'
       });
     } catch (err) {
       console.error('Logout error:', err);
     }
+    setStoredSessionToken(null);
     setIsAuthenticated(false);
     setDbState({
       sites: [],
@@ -127,9 +140,7 @@ export default function App() {
   const fetchDbState = async (): Promise<boolean> => {
     setIsDbLoading(true);
     try {
-      const response = await fetch('/api/data', {
-        credentials: 'include'
-      });
+      const response = await apiFetch('/api/data');
       if (response.status === 401) {
         setIsAuthenticated(false);
         return false;
@@ -161,9 +172,8 @@ export default function App() {
   const handleResetData = async () => {
     if (!window.confirm("Voulez-vous réinitialiser toutes les données aux valeurs de démonstration ?")) return;
     try {
-      const response = await fetch('/api/data/reset', { 
-        method: 'POST',
-        credentials: 'include'
+      const response = await apiFetch('/api/data/reset', { 
+        method: 'POST'
       });
       const data = await response.json();
       if (data.success) {
@@ -210,9 +220,8 @@ export default function App() {
   // Callback when a partner is registered
   const handleAddPartner = async (newPartnerData: Omit<Partner, 'id' | 'leadsReceived' | 'revenueGenerated' | 'status'>) => {
     try {
-      const response = await fetch('/api/partners', {
+      const response = await apiFetch('/api/partners', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPartnerData)
       });
@@ -238,18 +247,15 @@ export default function App() {
   // Callback when lead details are modified
   const handleUpdateLead = async (leadId: string, updates: { status?: Lead['status']; assignedPartnerId?: string | null }) => {
     try {
-      const response = await fetch(`/api/leads/${leadId}`, {
+      const response = await apiFetch(`/api/leads/${leadId}`, {
         method: 'PUT',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
       });
       const updatedLead = await response.json();
       
       // Update local state by calling server state to sync revenue calculations
-      const freshRes = await fetch('/api/data', {
-        credentials: 'include'
-      });
+      const freshRes = await apiFetch('/api/data');
       const freshData = await freshRes.json();
       setDbState(freshData);
     } catch (error) {
@@ -267,9 +273,8 @@ export default function App() {
   const handleDeleteSite = async (siteId: string) => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce microsite d'acquisition ?")) return;
     try {
-      const response = await fetch(`/api/sites/${siteId}`, { 
-        method: 'DELETE',
-        credentials: 'include'
+      const response = await apiFetch(`/api/sites/${siteId}`, { 
+        method: 'DELETE'
       });
       if (response.ok) {
         setDbState(prev => ({
@@ -286,9 +291,8 @@ export default function App() {
   // Trigger encrypted backup for security guardian
   const handleTriggerBackup = async () => {
     try {
-      const response = await fetch('/api/security/backup', { 
-        method: 'POST',
-        credentials: 'include'
+      const response = await apiFetch('/api/security/backup', { 
+        method: 'POST'
       });
       const data = await response.json();
       if (data.success) {
