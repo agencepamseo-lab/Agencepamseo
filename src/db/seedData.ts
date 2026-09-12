@@ -23,7 +23,6 @@ export const initialSites: Site[] = [
       { question: "Vos équipements sont-ils garantis ?", answer: "Oui, tous nos panneaux sont garantis 10 ans et nos batteries de 2 à 5 ans selon la gamme." }
     ],
     leadsCount: 14,
-    apiKey: "lf_key_solaire_bobo_9921",
     brandedConfig: {
       logoUrl: "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=100&auto=format&fit=crop",
       brandName: "Faso Solaire Solutions",
@@ -129,7 +128,6 @@ export const initialSites: Site[] = [
       { question: "Où se déroulent les cours ?", answer: "Dans nos locaux connectés situés au centre-ville de Bobo-Dioulasso, ou en ligne selon la formule." }
     ],
     leadsCount: 9,
-    apiKey: "lf_key_academie_tech_8812",
     brandedConfig: {
       logoUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&auto=format&fit=crop",
       brandName: "Académie Tech du Houet",

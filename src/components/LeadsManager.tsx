@@ -510,22 +510,13 @@ export default function LeadsManager({
                   {/* Action transitions depending on current state */}
                   <div className="pt-2 border-t border-slate-800 flex flex-wrap gap-2">
                     {(selectedLead.status === 'RECEIVED' || selectedLead.status === 'new') && (
-                      <>
-                        <button
-                          onClick={() => handleTransitionStep('QUALIFIED')}
-                          className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-[11px] flex items-center gap-1.5 cursor-pointer"
-                        >
-                          <Sparkles className="w-3.5 h-3.5" />
-                          Passer en Qualification →
-                        </button>
-                        <button
-                          onClick={() => handleTransitionStep('HUMAN_REVIEW')}
-                          className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold text-[11px] flex items-center gap-1.5 cursor-pointer"
-                        >
-                          <UserCheck className="w-3.5 h-3.5" />
-                          Prendre en Contrôle Humain →
-                        </button>
-                      </>
+                      <button
+                        onClick={() => handleTransitionStep('QUALIFIED')}
+                        className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-[11px] flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Étape suivante : Qualifié (2/6) →
+                      </button>
                     )}
 
                     {selectedLead.status === 'QUALIFIED' && (
@@ -534,27 +525,18 @@ export default function LeadsManager({
                         className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold text-[11px] flex items-center gap-1.5 cursor-pointer"
                       >
                         <UserCheck className="w-3.5 h-3.5" />
-                        Démarrer le Contrôle Humain (Opérateur) →
+                        Étape suivante : Contrôle Humain (3/6) →
                       </button>
                     )}
 
                     {selectedLead.status === 'HUMAN_REVIEW' && (
-                      <>
-                        <button
-                          onClick={() => handleTransitionStep('WAITING_FOR_OFFER')}
-                          className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-semibold text-[11px] flex items-center gap-1.5 cursor-pointer"
-                        >
-                          <Clock3 className="w-3.5 h-3.5" />
-                          En attente d'une offre →
-                        </button>
-                        <button
-                          onClick={() => handleTransitionStep('VALIDATED')}
-                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-[11px] flex items-center gap-1.5 cursor-pointer"
-                        >
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          Valider le dossier (Approuver) →
-                        </button>
-                      </>
+                      <button
+                        onClick={() => handleTransitionStep('WAITING_FOR_OFFER')}
+                        className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-semibold text-[11px] flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Clock3 className="w-3.5 h-3.5" />
+                        Étape suivante : En attente d'offre (4/6) →
+                      </button>
                     )}
 
                     {selectedLead.status === 'WAITING_FOR_OFFER' && (
@@ -563,8 +545,22 @@ export default function LeadsManager({
                         className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-[11px] flex items-center gap-1.5 cursor-pointer"
                       >
                         <CheckCircle className="w-3.5 h-3.5" />
-                        Offre prête : Valider le dossier →
+                        Étape suivante : Valider le dossier (5/6) →
                       </button>
+                    )}
+
+                    {selectedLead.status === 'VALIDATED' && (
+                      <div className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5 py-1">
+                        <CheckCircle className="w-4 h-4" />
+                        Dossier Validé. Prêt pour la transmission au partenaire ci-dessous.
+                      </div>
+                    )}
+
+                    {selectedLead.status === 'TRANSMITTED' && (
+                      <div className="text-xs text-teal-400 font-semibold flex items-center gap-1.5 py-1">
+                        <Check className="w-4 h-4" />
+                        Parcours terminé : dossier transmis avec succès au partenaire.
+                      </div>
                     )}
                   </div>
                 </div>
@@ -636,9 +632,16 @@ export default function LeadsManager({
                 </div>
 
                 {/* Submit transmission button */}
+                {selectedLead.status !== 'VALIDATED' && selectedLead.status !== 'TRANSMITTED' && (
+                  <div className="p-2.5 bg-amber-950/40 border border-amber-800/40 rounded-xl text-[11px] text-amber-300 flex items-center gap-2">
+                    <Clock3 className="w-4 h-4 shrink-0 text-amber-400" />
+                    <span>Transmission verrouillée : le dossier doit obligatoirement être validé (Étape 5) avant de pouvoir être transmis à un partenaire.</span>
+                  </div>
+                )}
+
                 <button
                   onClick={handleTransmitToPartner}
-                  disabled={isTransmitting || (!selectedPartnerIdForTransmit && !suggestedPartner)}
+                  disabled={isTransmitting || selectedLead.status !== 'VALIDATED' || (!selectedPartnerIdForTransmit && !suggestedPartner)}
                   className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-950"
                 >
                   <Send className="w-4 h-4" />

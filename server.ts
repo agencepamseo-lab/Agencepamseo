@@ -121,6 +121,19 @@ export const activeSessions = new Map<string, OperatorSession>();
 export const SESSION_COOKIE_NAME = 'lf_operator_session';
 export const SESSION_DURATION_MS = 8 * 60 * 60 * 1000; // 8 heures de validité
 
+/**
+ * Strict commercial workflow state machine transitions.
+ * Authorized sequence:
+ * RECEIVED -> QUALIFIED -> HUMAN_REVIEW -> WAITING_FOR_OFFER -> VALIDATED -> TRANSMITTED
+ */
+export const WORKFLOW_TRANSITIONS: Record<string, string> = {
+  RECEIVED: 'QUALIFIED',
+  QUALIFIED: 'HUMAN_REVIEW',
+  HUMAN_REVIEW: 'WAITING_FOR_OFFER',
+  WAITING_FOR_OFFER: 'VALIDATED',
+  VALIDATED: 'TRANSMITTED'
+};
+
 export function parseCookies(req: express.Request): Record<string, string> {
   const cookieHeader = req.headers.cookie;
   if (!cookieHeader) return {};
@@ -930,6 +943,20 @@ app.put("/api/leads/:id", authenticate, async (req, res) => {
   }
 
   const oldStatus = oldLead.status;
+
+  // Strict workflow transition check if status is modified
+  if (status !== undefined && status !== oldLead.status) {
+    const effectiveCurrent = oldLead.status === 'new' ? 'RECEIVED' : oldLead.status;
+    if (Object.keys(WORKFLOW_TRANSITIONS).includes(effectiveCurrent)) {
+      const allowedNext = WORKFLOW_TRANSITIONS[effectiveCurrent];
+      if (status !== allowedNext) {
+        return res.status(400).json({
+          error: `Transition interdite : impossible de passer de '${oldLead.status}' à '${status}'. La seule étape suivante autorisée est '${allowedNext || 'aucune'}'.`
+        });
+      }
+    }
+  }
+
   const updatedLead: Lead = {
     ...oldLead,
     status: status !== undefined ? status : oldLead.status,
@@ -976,10 +1003,10 @@ app.post("/api/leads/:id/workflow", authenticate, async (req, res) => {
   const { id } = req.params;
   const { status, note } = req.body;
 
-  const validStatuses = ['RECEIVED', 'QUALIFIED', 'HUMAN_REVIEW', 'WAITING_FOR_OFFER', 'VALIDATED', 'TRANSMITTED', 'new', 'contacted', 'sold', 'rejected'];
+  const validStatuses = ['RECEIVED', 'QUALIFIED', 'HUMAN_REVIEW', 'WAITING_FOR_OFFER', 'VALIDATED', 'TRANSMITTED'];
   if (!status || !validStatuses.includes(status)) {
     return res.status(400).json({ 
-      error: "Statut invalide. Statuts supportés : " + validStatuses.join(', ') 
+      error: "Statut invalide. Statuts de workflow supportés : " + validStatuses.join(', ') 
     });
   }
 
@@ -989,6 +1016,28 @@ app.post("/api/leads/:id/workflow", authenticate, async (req, res) => {
 
   if (req.authClient && req.authClient.siteId !== 'all' && lead.siteId !== req.authClient.siteId) {
     return res.status(403).json({ error: "Accès refusé pour ce site." });
+  }
+
+  const currentStatus = lead.status;
+  if (currentStatus === status) {
+    return res.json({ success: true, lead, message: `Lead déjà au statut ${status}.` });
+  }
+
+  // Machine d'état stricte (Blocage 4) :
+  // Autorisé :
+  // RECEIVED → QUALIFIED
+  // QUALIFIED → HUMAN_REVIEW
+  // HUMAN_REVIEW → WAITING_FOR_OFFER
+  // WAITING_FOR_OFFER → VALIDATED
+  // VALIDATED → TRANSMITTED
+  // Interdit : sauts d'étapes, retours en arrière, ou passage direct à TRANSMITTED sans être VALIDATED
+  const effectiveCurrent = currentStatus === 'new' ? 'RECEIVED' : currentStatus;
+  const allowedNextStatus = WORKFLOW_TRANSITIONS[effectiveCurrent];
+
+  if (!allowedNextStatus || allowedNextStatus !== status) {
+    return res.status(400).json({ 
+      error: `Transition de workflow interdite : impossible de passer de '${currentStatus}' à '${status}'. La seule étape suivante autorisée est '${allowedNextStatus || 'aucune (parcours terminé)'}'.` 
+    });
   }
 
   const oldStatus = lead.status;
@@ -1044,6 +1093,15 @@ app.post("/api/leads/:id/transmit", authenticate, async (req, res) => {
   // Scope check
   if (req.authClient && req.authClient.siteId !== 'all' && lead.siteId !== req.authClient.siteId) {
     return res.status(403).json({ error: "Accès refusé pour ce site." });
+  }
+
+  // BLOCAGE 4 : Vérification stricte de l'état préalable VALIDATED
+  // Le endpoint /api/leads/:id/transmit doit impérativement vérifier que le lead est déjà dans l’état : VALIDATED
+  // Sinon : aucun partenaire assigné, aucun email, aucun changement d’état, et erreur HTTP retournée.
+  if (lead.status !== 'VALIDATED') {
+    return res.status(400).json({ 
+      error: `Transmission refusée : le lead doit impérativement être à l'état 'VALIDATED' (actuellement '${lead.status}'). Le parcours de contrôle humain doit être complété avant toute transmission.` 
+    });
   }
 
   let targetPartnerId = partnerId;
@@ -1358,8 +1416,8 @@ async function processLeadQualification(params: {
     email,
     city,
     rawMessage,
-    consentCILChecked = true,
-    consentPartnerChecked = true,
+    consentCILChecked,
+    consentPartnerChecked,
     requestHeaders = {}
   } = params;
 
@@ -1376,7 +1434,15 @@ async function processLeadQualification(params: {
   }
 
   // 2. Mandatory Consents Verification (CIL & Partner Transmission)
-  if (consentCILChecked === false || consentPartnerChecked === false) {
+  // BLOCAGE 3 : Le consentement doit être EXPLICITE (true obligatoire, booléen strict).
+  // Absent, null, undefined ou false -> HTTP 400.
+  if (typeof consentCILChecked !== 'boolean' || typeof consentPartnerChecked !== 'boolean') {
+    return { 
+      error: "Consentement explicite obligatoire : consentCIL et consentPartner doivent être fournis sous forme de booléens (true requis).", 
+      status: 400 
+    };
+  }
+  if (consentCILChecked !== true || consentPartnerChecked !== true) {
     return { error: "Consentement CIL et partenaire obligatoire non accordé.", status: 400 };
   }
 
@@ -1389,12 +1455,32 @@ async function processLeadQualification(params: {
     }
   }
 
-  // Security Check: Verify API Key if site requires key or header provided
-  const headerKey = requestHeaders['x-leadfactory-key'] || requestHeaders['x-api-key'];
+  // BLOCAGE 2 : Contrôle d'authentification API Key
+  // siteId + API key valide = autorisé.
+  // API key absente = HTTP 401.
+  // API key incorrecte = HTTP 403.
+  const cookieHeader = requestHeaders.cookie || '';
+  const cookies = parseCookies({ headers: { cookie: cookieHeader } } as any);
+  const sessionToken = (requestHeaders['x-session-id'] as string) || cookies[SESSION_COOKIE_NAME];
+  const isOperatorSession = !!(sessionToken && activeSessions.has(sessionToken));
+
+  const headerKey = (requestHeaders['x-leadfactory-key'] || requestHeaders['x-api-key']) as string | undefined;
   const effectiveKey = providedApiKey || headerKey;
 
-  if (site.apiKey && effectiveKey && site.apiKey !== effectiveKey) {
-    return { error: "Clé API invalide pour ce site d'acquisition.", status: 401 };
+  if (!isOperatorSession) {
+    if (!effectiveKey) {
+      return { 
+        error: "Clé API d'ingestion manquante. Veuillez fournir l'en-tête X-LeadFactory-Key ou le paramètre apiKey.", 
+        status: 401 
+      };
+    }
+
+    if (!site.apiKey || effectiveKey !== site.apiKey) {
+      return { 
+        error: "Clé API invalide ou non autorisée pour ce site d'acquisition.", 
+        status: 403 
+      };
+    }
   }
 
   // --- SECURITY GUARDIAN ANOMALY DETECTION ---
@@ -1666,6 +1752,18 @@ const ingestLeadHandler = async (req: express.Request, res: express.Response) =>
     return res.status(400).json({ error: "Champs requis manquants : name et phone sont obligatoires." });
   }
 
+  // BLOCAGE 3 : Validation stricte du consentement explicite (true booléen requis)
+  if (typeof consentCIL !== 'boolean' || typeof consentPartner !== 'boolean') {
+    return res.status(400).json({ 
+      error: "Consentement explicite obligatoire : consentCIL et consentPartner doivent être fournis sous forme de booléens (true requis)." 
+    });
+  }
+  if (consentCIL !== true || consentPartner !== true) {
+    return res.status(400).json({ 
+      error: "Consentement CIL et partenaire obligatoire non accordé." 
+    });
+  }
+
   const result = await processLeadQualification({
     siteId,
     apiKey,
@@ -1678,8 +1776,8 @@ const ingestLeadHandler = async (req: express.Request, res: express.Response) =>
     email,
     city,
     rawMessage: rawMessage || "Demande de devis ou contact depuis landing page externe.",
-    consentCILChecked: consentCIL !== false,
-    consentPartnerChecked: consentPartner !== false,
+    consentCILChecked: consentCIL,
+    consentPartnerChecked: consentPartner,
     requestHeaders: req.headers
   });
 
@@ -1724,8 +1822,7 @@ app.get("/api/sites/:siteId/branded-config", async (req, res) => {
       isCILCompliant: site.isCILCompliant,
       consentNotice: site.complianceReport?.consentNotice || "En soumettant ce formulaire, vous acceptez d'être contacté par nos experts certifiés.",
       legalMentions: site.complianceReport?.legalMentions || "Conforme à la Loi N°001-2021/AN du Burkina Faso sur la protection des données (CIL)."
-    },
-    apiKey: site.apiKey || "lf_key_default"
+    }
   };
 
   res.json(config);

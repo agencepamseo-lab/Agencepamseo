@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import pkg from 'pg';
 const { Pool } = pkg;
 import { drizzle } from 'drizzle-orm/node-postgres';
@@ -365,6 +366,8 @@ export async function initDb() {
       } catch (_) {}
 
       console.log(`[DATABASE] Neon PostgreSQL CONNECTED (Host: ${maskedHost}, Database: ${dbName}, Region: eu-central-1, SSL: ENABLED)`);
+      // Ensure all existing sites in Neon have a secure, unique, random API key (Blocker 2)
+      await ensureSiteApiKeys();
     } catch (err: any) {
       const sanitizedError = err?.message || 'Database connection error';
       if (isProduction) {
@@ -398,6 +401,60 @@ export async function closeDb() {
 
 // Data Access Layer Methods
 
+/**
+ * Generates a cryptographically strong, random API key for Lead Factory microsites.
+ * Format: lf_sec_<48 hex chars>
+ */
+export function generateSecureSiteApiKey(): string {
+  return `lf_sec_${crypto.randomBytes(24).toString('hex')}`;
+}
+
+/**
+ * Idempotently backfills unique, random cryptographic API keys for any existing sites in Neon or local state
+ * that lack an apiKey or have a generic/legacy key.
+ */
+export async function ensureSiteApiKeys(): Promise<void> {
+  if (pgPool) {
+    const client = await pgPool.connect();
+    try {
+      const res = await client.query<{ id: string; api_key: string | null }>(
+        'SELECT id, api_key FROM sites'
+      );
+      for (const row of res.rows) {
+        const currentKey = row.api_key;
+        const isLegacyOrMissing = !currentKey || 
+          currentKey.trim() === '' || 
+          currentKey === 'lf_key_default' ||
+          currentKey === 'lf_key_solaire_bobo_9921' ||
+          currentKey === 'lf_key_academie_tech_8812';
+
+        if (isLegacyOrMissing) {
+          const newSecureKey = generateSecureSiteApiKey();
+          await client.query('UPDATE sites SET api_key = $1 WHERE id = $2', [newSecureKey, row.id]);
+        }
+      }
+    } catch (err) {
+      console.error('[DATABASE] Error during ensureSiteApiKeys backfill:', err);
+    } finally {
+      client.release();
+    }
+  }
+
+  // Also ensure local fileState has secure random keys
+  for (const s of fileState.sites) {
+    const currentKey = s.apiKey;
+    const isLegacyOrMissing = !currentKey || 
+      currentKey.trim() === '' || 
+      currentKey === 'lf_key_default' ||
+      currentKey === 'lf_key_solaire_bobo_9921' ||
+      currentKey === 'lf_key_academie_tech_8812';
+
+    if (isLegacyOrMissing) {
+      s.apiKey = generateSecureSiteApiKey();
+    }
+  }
+}
+
 export async function getSites(): Promise<Site[]> {
   if (drizzleDb) {
     const rows = await drizzleDb.select().from(schema.sites);
@@ -426,6 +483,9 @@ export async function getSites(): Promise<Site[]> {
 }
 
 export async function saveSite(site: Site): Promise<Site> {
+  if (!site.apiKey || site.apiKey.trim() === '' || site.apiKey === 'lf_key_default') {
+    site.apiKey = generateSecureSiteApiKey();
+  }
   if (drizzleDb) {
     await drizzleDb.insert(schema.sites).values({
       id: site.id,

@@ -146,7 +146,7 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
     const selectedSite = sites.find(s => s.id === ingestSiteId);
     return `curl -X POST "${window.location.origin}/api/ingest-lead" \\
   -H "Content-Type: application/json" \\
-  -H "X-LeadFactory-Key: ${selectedSite?.apiKey || 'lf_key_solaire_bobo_9921'}" \\
+  -H "X-LeadFactory-Key: ${selectedSite?.apiKey ? '••••••••' : 'YOUR_SITE_API_KEY'}" \\
   -d '{
     "siteId": "${ingestSiteId}",
     "campaignId": "${ingestCampaignId}",
@@ -157,7 +157,9 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
     "phone": "${ingestPhone}",
     "email": "${ingestEmail}",
     "city": "${ingestCity}",
-    "rawMessage": "${ingestMessage}"
+    "rawMessage": "${ingestMessage}",
+    "consentCIL": true,
+    "consentPartner": true
   }'`;
   };
 
@@ -373,7 +375,7 @@ export default function CampaignIntelligence({ sites = [], leads = [], partners 
                   <div className="text-xs font-bold text-slate-900 mb-2">Paramètres de Marque (Site Memory)</div>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div><span className="text-slate-400">Titre personnalisé :</span> <span className="font-semibold">{brandedConfig.branding.customTitle}</span></div>
-                    <div><span className="text-slate-400">Clé API Réseau :</span> <code className="bg-slate-200 px-1 rounded text-[10px] font-mono">{brandedConfig.apiKey}</code></div>
+                    <div><span className="text-slate-400">Authentification API :</span> <span className="text-emerald-600 font-semibold flex items-center gap-1"><CheckCircle2 className="w-3 h-3 inline" /> Protégée par clé serveur</span></div>
                     <div><span className="text-slate-400">CTA Formulaire :</span> <span className="font-semibold text-emerald-700">{brandedConfig.branding.ctaText}</span></div>
                     <div><span className="text-slate-400">Conformité CIL :</span> <span className="font-semibold text-blue-700">Conforme Loi 001-2021/AN</span></div>
                   </div>
